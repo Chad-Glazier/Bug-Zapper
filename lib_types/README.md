@@ -1,0 +1,1 @@
+This folder has type declarations that match up to the `lib` files. This is just for the TypeScript LSP, it does not affect the how any of the code is executed.

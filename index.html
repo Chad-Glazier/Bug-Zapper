@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Spinny Sphere</title>
+</head>
+<body>
+	<!-- canvas element for rendering. -->
+	<canvas id="gl-canvas" width="1920px" height="1080px"></canvas>
+
+	<!-- all of the `lib` scripts I used. -->
+	<script src="lib/MV.js"></script>
+
+	<!-- my shader source code.
+	 these are actually JavaScript files that just declare global
+	 constants containing the shader source code as strings. -->
+	<script src="shaders.js"></script>
+
+	<!-- my script(s). -->
+	<script defer src="./index.js"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+
+		#gl-canvas {
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			padding: 0;
+			position: fixed;
+		}
+	</style>
+</body>
+</html>

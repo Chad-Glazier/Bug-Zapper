@@ -92,7 +92,7 @@ declare function scale(
 // ModelView matrix generators
 declare function lookAt(eye: number[], at: number[], up: number[]): number[][];
 
-// Projection matrix generators
+// Projection matrix generator
 declare function ortho(
 	left: number,
 	right: number,
@@ -116,7 +116,12 @@ declare function perspective(
 	aspect: number,
 	near: number,
 	far: number,
-): number[][];
+): [
+	[number, number, number, number],
+	[number, number, number, number],
+	[number, number, number, number],
+	[number, number, number, number]
+];
 
 // Matrix functions
 declare function transpose(m: number[][]): number[][];
@@ -132,3 +137,16 @@ declare function cross(u: number[], v: number[]): number[];
  * @param {number[][]} u the matrix to flatten.
  */
 declare function flatten(u: number[][]): Float32Array
+
+/**
+ * Normalizes a vector.
+ * 
+ * @param u the vector to normalize.
+ * @param excludeLastComponent set this to `true` to ignore the last
+ * component. This can be useful when working with homogenous coordinates.
+ * Defaults to `false`.
+ * 
+ * @returns A vector parallel to `u` with a magnitude of `1`.
+ */
+declare function normalize(u: number[], excludeLastComponent?: boolean): number[]
+

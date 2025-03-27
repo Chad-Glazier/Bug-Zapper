@@ -4,6 +4,10 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Spinny Sphere</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
 	<!-- canvas element for rendering. -->
@@ -13,17 +17,40 @@
 	<script src="lib/MV.js"></script>
 
 	<!-- my shader source code.
-	 these are actually JavaScript files that just declare global
+	 this is actually just a JavaScript file that declares global
 	 constants containing the shader source code as strings. -->
 	<script src="shaders.js"></script>
 
 	<!-- my script(s). -->
-	<script defer src="./index.js"></script>
+	<script defer src="index.js"></script>
+	<script src="util/sphere.js"></script>
+	<script src="util/initShaderProgram.js"></script>
+	<script src="util/renderScene.js"></script>
+	<script src="util/rectangle.js"></script>
+	<script src="util/transform.js"></script>
+	<script src="constants.js"></script>
+
+	<div id="menu">
+		<button id="play">Play</button>
+		<button id="restart">Restart</button>
+		<button>Instructions</button>
+	</div>
+
+	<div id="score">
+		0
+	</div>
+
+	<div id="health-container">
+		<div id="health-bar"></div>
+	</div>
+
+	<img id="crosshairs" src="img/crosshairs.png" />
 
 	<style>
 		body {
 			padding: 0;
 			margin: 0;
+			font-family: 'Space Mono', monospace;
 		}
 
 		#gl-canvas {
@@ -32,6 +59,71 @@
 			margin: 0;
 			padding: 0;
 			position: fixed;
+			top: 0;
+			left: 0;
+		}
+
+		#score {
+			position: fixed;
+			top: 1rem;
+			right: 15px;
+			z-index: 3;
+			font-size: 2.5rem;
+			color: white;
+		}
+
+		#score::before {
+			position: fixed;
+			top: 4rem;
+			right: 17px;
+			font-size: 1.5rem;
+			content: 'SCORE';
+		}
+
+		#menu {
+			width: clamp(400px, 60%, 600px);
+			height: clamp(400px, 60%, 600px);
+			position: fixed;
+			z-index: 2;
+			top: calc(50vh - 0.5 * clamp(400px, 60%, 600px));
+			left: calc(50vw - 0.5 * clamp(400px, 60%, 600px));
+			display: flex;
+			flex-direction: column;
+			backdrop-filter: blur(5px);
+			justify-content: center;
+			transition: top 400ms ease-in-out;
+			border: 2px solid;
+			border-color: #7efc82;
+			border-radius: 15px;
+			background-color: rgba(0, 0, 0, 0.2);
+		}
+
+		#menu button {
+			margin: 10px 10px;
+			font-family: 'Space Mono', monospace;
+			font-size: 1.75rem;
+			width: auto;
+			background-color: rgba(0, 0, 0, 0);
+			color: white;
+			border: 0;
+			transition: all 400ms;
+			text-transform: uppercase;
+		}
+
+		#menu button:hover {
+			cursor: pointer;
+			color: #7efc82;
+		}
+
+		#crosshairs {
+			--length: 2rem;
+			position: fixed;
+			width: var(--length);
+			height: var(--length);
+			top: calc(50vh - var(--length) / 2); 
+			/* top: calc(54vh - var(--length) / 2); */
+			left: calc(50vw - var(--length) / 2);
+			z-index: 1;
 		}
 	</style>
 </body>

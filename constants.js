@@ -26,13 +26,13 @@ const SPHERE_DIVISIONS = 72
 const BASE_SPHERE_COLOR = [0.0, 0.0, 0.0, 1.0]
 
 /** How many bugs spawn per second. */ 
-const BUG_SPAWN_FREQUENCY = 1
+const BUG_SPAWN_FREQUENCY = 0.65
 
 /** How much the arc length for each bug increases per second. */
-const BUG_GROWTH_RATE = Math.PI / 36
+const BUG_GROWTH_RATE = Math.PI / 72
 
 /** The maximum number of allowed bugs at one time. */
-const BUG_CAPACITY = 1
+const BUG_CAPACITY = 8
 
 /** 
  * The radial distance between each bug. The gaps must exist to prevent the
@@ -50,7 +50,7 @@ const PROJECTILE_SPEED = 15
 /**
  * Determines the cooldown for the projectile cannon in seconds.
  */
-const CANNON_COOLDOWN = 0.5
+const CANNON_COOLDOWN = 0.2
 
 /**
  * Defines the RPM of the sphere when holding down a key to rotate it.
@@ -73,5 +73,5 @@ const BUG_DEATH_SPEED = Math.PI
 const SCORE_SETTINGS = {
 	missedShot: -50,
 	landedShot: 100,
-	perSecond: 0
+	perSecond: 1
 }

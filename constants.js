@@ -55,7 +55,7 @@ const CANNON_COOLDOWN = 0.5
 /**
  * Defines the RPM of the sphere when holding down a key to rotate it.
  */
-const KEY_ROTATION_SENSITIVITY = 10
+const KEY_ROTATION_SENSITIVITY = 12
 
 /**
  * Defines the color of dying bugs.

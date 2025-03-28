@@ -37,7 +37,7 @@ const elementwiseAddition = (...vectors) => {
  * of the first vertex, the next three represent the second vertex, and so on.
  */
 function rectangle(axis, distance, length, height) {
-	const centerPoint = normalize(axis).map(x => x * distance / 2)
+	const centerPoint = normalize(axis).map(x => x * distance)
 
 	// Below, we define some "forwards," "upwards," "leftwards," etc. Note that
 	// The distinction between the anti-parallel directions (e.g., left- and

@@ -17,7 +17,7 @@ const INITIAL_DISTANCE = 5
  * Setting this to `1` will effectively remove all inertia, while `0` will
  * remove friction entirely.
  */
-const FRICTION = 0.025
+const FRICTION = 0.25
 
 /** The number of divisions for each sphere. */
 const SPHERE_DIVISIONS = 72
@@ -68,10 +68,23 @@ const DYING_BUG_COLOR = [0.78, 0.24, 0.24, 1.0]
  * How quickly a bug dies (once hit). This number will be the amount that the
  * inner arc length increases per second.
  */
-const BUG_DEATH_SPEED = Math.PI
+const BUG_DEATH_SPEED = Math.PI / 2
 
 const SCORE_SETTINGS = {
 	missedShot: -50,
 	landedShot: 100,
 	perSecond: 1
 }
+
+/**
+ * Determines how sensitive the sphere is to rotation from clicking and
+ * dragging it. Values above `1` will increase the sensitivity above it's
+ * default, values below `1` will decrease the sensitivity. Negative values
+ * are technically possible, but will invert the rotation direction.
+ * 
+ * When you drag the sphere, the rotation is based on the displacement of the
+ * cursor, divided by the length of the screen (i.e., the height or width,
+ * whichever is longer), multiplied by 360 degrees, and then finally multiplied
+ * by this constant. 
+ */
+const DRAG_ROTATION_SENSITIVITY = 1.0

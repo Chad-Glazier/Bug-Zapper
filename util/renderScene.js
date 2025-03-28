@@ -176,7 +176,7 @@ function renderScene(
 
 	// Draw the projectiles
 	for (const projectile of projectiles) {
-		const projectileRectangle = rectangle(projectile.relativeAxis, projectile.radialDistance + options.distance, 0.1, 0.01)
+		const projectileRectangle = rectangle(projectile.relativeAxis, projectile.radialDistance, 0.1, 0.01)
 
 		let projectileMVMatrix = mat4()
 		projectileMVMatrix = mult(options.rotate, projectileMVMatrix)

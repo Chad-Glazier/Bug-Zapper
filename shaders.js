@@ -12,8 +12,7 @@
  * were found in the `./shaders` directory.
  */
 
-const POINTS_FSHADER_SOURCE = `
-void main() {
+const POINTS_FSHADER_SOURCE = `void main() {
 	gl_FragColor = vec4(0.49, 0.98, 0.50, 1.0);
 }
 `

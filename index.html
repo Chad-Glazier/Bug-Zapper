@@ -39,7 +39,7 @@
 	<script src="util/rectangle.js"></script>
 	<script src="util/transform.js"></script>
 	<script src="util/GameState.js"></script>
-	<script src="util/UI.js"></script>
+	<script src="util/ui.js"></script>
 	<script src="constants.js"></script>
 
 	<!-- My HTML user interface (mostly menu stuff). -->
@@ -59,11 +59,88 @@
 	</menu>
 
 	<div id="instructions">
-		Instructions go here (incomplete).
+		<div id="instructions-inner">
+			<h1>OBJECTIVE</h1>
+			<p>
+				Your goal is to destroy any bug outbreaks until the planet is evacuated. The <strong>COVERAGE</strong>
+				represents the proportion of the planet that is currently controlled by the bugs. While more than
+				30% of the planet is covered, the remaining <strong>SURVIVORS</strong> will suffer casualties
+				at an increasing rate. Your objective is to minimize casualties.
+			</p>
+			<p>
+				Once the survivors have been evacuated, you will be free to purge the planet of any remaining
+				invaders without regard for collateral damage.
+			</p>
+			
+			<h1>CONTROLS</h1>
+
+			<ul>
+				<li>You can click and drag the sphere to rotate it.</li>
+				<li>The scroll wheel can be used to zoom in and out.</li>
+			</ul>
+			
+			<table>
+				<tbody>
+					<tr>
+						<td>
+							<div class="key">W</div>
+							<div class="key">A</div>
+							<div class="key">S</div>
+							<div class="key">D</div>					
+						</td>
+						<td>
+							Rotates the sphere.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="key">&#x2191;</div>
+							<div class="key">&#x2192;</div>
+							<div class="key">&#x2193;</div>
+							<div class="key">&#x2190;</div>
+						</td>
+						<td>
+							Rotates the sphere.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="key esc">ESC</div>
+						</td>
+						<td>
+							Opens/closes the pause menu.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="key space">SPACE</div>
+						</td>
+						<td>
+							Fires the ship's cannon.
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<button id="return-button">
+			Return
+		</button>
 	</div>
 
-	<div id="score">
+	<div id="score" class="textDisplay">
 		<span id="score-display">0</span>
+	</div>
+
+	<div id="survivor-count" class="textDisplay">
+		<span id="survivor-display">0</span>
+	</div>
+
+	<div id="coverage" class="textDisplay">
+		<span id="coverage-display">0%</span>
+	</div>
+
+	<div id="time-remaining" class="textDisplay">
+		<span id="time-remaining-display">00:00</span>
 	</div>
 
 	<img id="crosshairs" src="img/crosshairs.png" />

@@ -41,6 +41,9 @@ class UI {
 		 * @type {boolean}
 		 */
 		this.inAnimation = false
+
+		this.instructionsShown = false
+		this.pauseMenuShown = false
 	}
 
 	/**
@@ -52,6 +55,41 @@ class UI {
 	set score(newScore) {
 		this.element.textDisplay.score.textContent = 
 			Math.round(newScore).toString()
+	}
+
+	/**
+	 * The survivor count that is displayed in the UI.
+	 * 
+	 * @param {number} newSurvivorCount The updated survivor count to display.
+	 */
+	set survivorCount(newSurvivorCount) {
+		this.element.textDisplay.survivor.textContent =
+			Math.round(newSurvivorCount).toString()
+	}
+
+	/**
+	 * The coverage percentage that is displayed in the UI.
+	 * 
+	 * @param {number} newCoverage A number from `0` to `1` that represents the
+	 * updated coverage to display.
+	 */
+	set coverage(newCoverage) {
+		newCoverage = Math.floor(newCoverage * 100)
+		this.element.textDisplay.survivor.textContent =
+			`${newCoverage}%`
+	}
+
+	/**
+	 * The remaining time displayed in the UI.
+	 * 
+	 * @param {number} newTimeRemaining The time remaining in milliseconds.
+	 */
+	set timeRemaining(newTimeRemaining) {
+		const minutes = Math.floor(newTimeRemaining / 1000 / 60)
+		const seconds = Math.floor(newTimeRemaining / 1000 - minutes * 60)
+
+		this.element.textDisplay.survivor.textContent =
+			`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
 	}
 
 	/**
@@ -94,7 +132,7 @@ class UI {
 		}, duration)
 	}
 
-	/**
+	/** 
 	 * @param {(() => void) | null} uponCompletion An optional callback 
 	 * function that will be executed when the animation finishes. 
 	 */
@@ -105,6 +143,7 @@ class UI {
 			ANIMATION_TIME,
 			uponCompletion
 		)
+		this.pauseMenuShown = false
 	}
 
 	showPauseMenu() {
@@ -113,5 +152,37 @@ class UI {
 			this.conditionalStyles.pauseMenu.shown,
 			ANIMATION_TIME
 		)
+		this.pauseMenuShown = true
+	}
+
+	/**
+	 * @param {(() => void) | null} uponCompletion An optional callback 
+	 * function that will be executed when the animation finishes.
+	 */
+	hideInstructions(uponCompletion = null) {
+		this.applyStyles(
+			this.element.informationCard.instructions,
+			this.conditionalStyles.infoPanel.hidden,
+			ANIMATION_TIME,
+			uponCompletion
+		)
+		this.instructionsShown = false
+	}
+
+	showInstructions() {
+		this.applyStyles(
+			this.element.informationCard.instructions,
+			this.conditionalStyles.infoPanel.shown,
+			ANIMATION_TIME
+		)
+		this.instructionsShown = true
+	}
+
+	get instructionsVisible() {
+		return this.instructionsShown
+	}
+
+	get pauseMenuVisible() {
+		return this.pauseMenuVisible
 	}
 }

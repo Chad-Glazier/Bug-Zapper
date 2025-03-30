@@ -479,8 +479,9 @@ class GameState {
 	}
 
 	/**
+	 * Retrieve's the current rotational momentum.
 	 * 
-	 * @returns The current rotational momentum of the game.
+	 * @returns {{ axis: number[], rpm: number }}
 	 */
 	getMomentum() {
 		return this.momentum
@@ -568,9 +569,18 @@ class GameState {
 			return
 		}
 
+		const totalBugArea = this.bugs
+			.map(({ arcLength }) => 
+				sphereSurfaceArea(arcLength, this.baseSphereRadius)
+			)
+			.reduce((a, b) => a + b, 0)
+		const baseSphereArea = 4 * Math.PI * Math.pow(this.baseSphereRadius, 2)
+		const coverage = Math.min(totalBugArea / baseSphereArea, 1)
+
 		let continuePropagation = true
 		const eventObject = {
 			score: this.score,
+			coverage,
 			stopPropagation: () => {
 				continuePropagation = false
 			}
@@ -657,7 +667,6 @@ class GameState {
 		this.timeOfLastBug = 0
 		this.timeOfLastProjectile = 0
 		this.paused = false
-		this.listeners = new Map()
 		this.gameLoop = NaN
 
 		this.handleEvent("score")
@@ -731,3 +740,29 @@ function willCollide(projectile, bug) {
 	return true
 }
 
+/**
+ * Given a partial sphere (such as one of the bugs) that is defined by a
+ * radial distance and a polar angle interval, this function calculates its
+ * surface area (not volume).
+ * 
+ * @param {number} polarMax The interval of the polar angle is [0, `polarMax`].
+ * angle.
+ * @param {number} radialDistance The radial distance of the sphere.
+ * @returns {number} The surface area of the partial sphere.
+ */
+function sphereSurfaceArea(polarMax, radialDistance) {
+	/*
+	(I explain the formula below. The math terms are in LaTeX.)
+
+	Recall that the differential surface area of a sphere is:
+	$dS = \rho^2 \sin\phi d\phi d\theta$, where $\rho$ is the radial distance,
+	$\phi$ is the polar angle, and $\theta$ is the azimuthal angle. We assume
+	that the azimuthal interval is $[0, 2 \pi]$ (the full interval), and so
+	we can integrate 
+	$\int_{0}^{2\pi}\int_{0}^{\phi_\text{max}}\rho^2\sin\phi d\phi d\theta$
+	which simplifies to
+	$2\pi\rho^2 (1 - \cos \phi_\text{max}).$
+
+	*/ 
+	return 2 * Math.PI * Math.pow(radialDistance, 2) * (1 - Math.cos(polarMax))
+}

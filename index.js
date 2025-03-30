@@ -71,16 +71,21 @@ function main() {
 	const playButton = document.getElementById("play-button")
 	const restartButton = document.getElementById("restart-button")
 	const instructionsButton = document.getElementById("instructions-button")
-
+	const returnButton = document.getElementById("return-button")
 	const increaseDifficultyButton = document.getElementById("increase-difficulty-button")
 	const decreaseDifficultyButton = document.getElementById("decrease-difficulty-button")
 	// text displays
 	const scoreDisplay = document.getElementById("score-display")
+	const survivorDisplay = document.getElementById("survivor-display")
+	const coverageDisplay = document.getElementById("coverage-display")
+	const timeRemaining = document.getElementById("time-remaining-display")
 
 	if (pauseMenu == null || instructions == null || playButton == null ||
 		restartButton == null || increaseDifficultyButton == null ||
 		decreaseDifficultyButton == null || scoreDisplay == null ||
-		instructionsButton == null
+		instructionsButton == null || returnButton == null || 
+		survivorDisplay == null || coverageDisplay == null ||
+		timeRemaining == null
 	) {
 		console.error(`One or more necessary elements were not found when setting up the UI.`)
 		return
@@ -100,10 +105,14 @@ function main() {
 				restart: restartButton,
 				increaseDifficulty: increaseDifficultyButton,
 				decreaseDifficulty: decreaseDifficultyButton,
-				instructions: instructionsButton
+				instructions: instructionsButton,
+				return: returnButton
 			},
 			textDisplay: {
-				score: scoreDisplay
+				score: scoreDisplay,
+				survivor: survivorDisplay,
+				coverage: coverageDisplay,
+				timeRemaining: timeRemaining
 			}
 		},
 		{
@@ -150,7 +159,7 @@ function main() {
 		bugSpawnFrequency: 0.65,
 		cannonCooldown: 0.2,
 		dragRotationSensitivity: 1.0,
-		keyRotationRPM: 10,
+		keyRotationRPM: 12,
 		bugCapacity: 8,
 		difficultyModifiers: {
 			easy: 0.75,
@@ -173,7 +182,9 @@ function main() {
 	// Sync the UI's display with the game state.
 	//
 
-	registerGameEventListeners(game, ui)
+	game.on("score", ({ score }) => ui.score = score)
+	// need to manage the game scores (survivors, coverage, etc.) and then
+	// sync it to the displays.
 
 	//
 	// Set up some controls.
@@ -182,7 +193,9 @@ function main() {
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key != "Escape") return
 
-		if (game.isPaused) {
+		if (game.isPaused && ui.instructionsVisible) {
+			ui.hideInstructions(() => game.unpause())
+		} else if (game.isPaused) {
 			ui.hidePauseMenu(() => game.unpause())
 		} else {
 			game.pause()
@@ -198,10 +211,18 @@ function main() {
 		ui.hidePauseMenu(() => game.unpause())
 	})
 
+	ui.element.button.return.addEventListener("click", () => {
+		ui.hideInstructions(() => ui.showPauseMenu())
+	})
+
 	ui.element.button.restart.addEventListener("click", () => {
 		game.restart()
 		game.pause()
 		ui.hidePauseMenu(() => game.unpause())
+	})
+
+	ui.element.button.instructions.addEventListener("click", () => {
+		ui.hidePauseMenu(() => ui.showInstructions())
 	})
 
 	canvas.addEventListener("wheel", (ev) => {
@@ -219,8 +240,8 @@ function main() {
 		if (game.isPaused) return
 
 		game.launchProjectile()
+
 		ev.preventDefault()
-		ev.stopPropagation()
 	})
 
 	//
@@ -229,17 +250,6 @@ function main() {
 	game.start()
 	game.pause()
 	ui.showPauseMenu()
-}
-
-/**
- * Register relevant event listeners to allow the UI to be synced with the
- * game state.
- * 
- * @param {GameState} game
- * @param {UI} ui
- */
-function registerGameEventListeners(game, ui) {
-	game.on("score", ({ score }) => ui.score = score)
 }
 
 /**
@@ -358,6 +368,8 @@ function enableKeyRotationControls(game) {
 	}
 
 	const updateMomentum = () => {
+		const originalMomentum = game.getMomentum()
+
 		const { up, down, left, right } = direction
 		let x = 0, y = 0
 		if (up && !down) {
@@ -374,6 +386,7 @@ function enableKeyRotationControls(game) {
 		}
 		if (x == 0 && y == 0) {
 			game.setMomentum([0, 0, 1], 0)
+			game.setInertia(originalMomentum.axis, originalMomentum.rpm)
 		} else {
 			game.setMomentum([x, y, 0], game.keyRotationRPM)
 		}

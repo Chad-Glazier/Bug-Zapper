@@ -172,6 +172,9 @@ declare type GameOptions = {
 declare type GameEvent = {
 	stopPropagation(): void
 	score: number
+	coverage: number
+	survivors: number
+	timeRemaining: number
 }
 
 declare type GameEventType = "pause" | "unpause" | "score" | "health"
@@ -201,9 +204,13 @@ declare type UIMapping = {
 		play: HTMLElement
 		decreaseDifficulty: HTMLElement
 		increaseDifficulty: HTMLElement
+		return: HTMLElement
 	}
 	textDisplay: {
 		score: HTMLElement
+		survivor: HTMLElement
+		coverage: HTMLElement
+		timeRemaining: HTMLElement
 	}
 }
 

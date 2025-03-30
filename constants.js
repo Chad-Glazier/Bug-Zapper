@@ -17,7 +17,7 @@ const INITIAL_DISTANCE = 5
  * Setting this to `1` will effectively remove all inertia, while `0` will
  * remove friction entirely.
  */
-const FRICTION = 0.25
+const FRICTION = 0.025
 
 /** The number of divisions for each sphere. */
 const SPHERE_DIVISIONS = 72
@@ -88,3 +88,33 @@ const SCORE_SETTINGS = {
  * by this constant. 
  */
 const DRAG_ROTATION_SENSITIVITY = 1.0
+
+/**
+ * The radius of the base sphere, which is ball that the bugs spawn on.
+ */
+const BASE_SPHERE_RADIUS = 1
+
+/**
+ * How many times per second the game is re-rendered.
+ */
+const REFRESH_RATE = 60
+
+/**
+ * The time (in milliseconds) that it takes to complete an animation on the
+ * UI menus. E.g., the number of milliseconds it takes to fully hide/show the
+ * pause menu. This should correspond to the `transition: ...` CSS property of
+ * relevant elements, the menu animations are *not* handled by the JavaScript
+ * code.
+ */
+const ANIMATION_TIME = 400
+
+/**
+ * Sets the difficulty modifiers for the game. Each modifier will be used as
+ * a multiplier for the growth rate, spawn frequency, and capacity of bugs.
+ */
+const DIFFICULTY_MODIFIERS = {
+	easy: 0.75,
+	normal: 1.0,
+	hard: 1.5,
+	apocalypse: 2.0
+}

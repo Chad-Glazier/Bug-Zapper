@@ -103,7 +103,7 @@ declare type Bug = {
 	 */
 	rotationMatrix: number[][]
 	arcLength: number
-	color: [number, number, number, number]
+	color: number[]
 
 	/**
 	 * The elevation of the bug above the base sphere.
@@ -141,3 +141,86 @@ declare type DyingBug = Bug & {
 	deathTime: number
 	innerArcLength: number
 }
+
+declare type GameOptions = {
+	keyRotationRPM: number
+	baseSphereRadius: number
+	startingDistance: number
+	maxDistance: number
+	minDistance: number
+	refreshRate: number
+	frictionCoefficient: number
+	projectileSpeed: number
+	bugGrowthRate: number
+	bugDeathRate: number
+	scoreSettings: ScoreSettings
+	bugElevationGap: number
+	enableInertia: boolean
+	bugSpawnFrequency: number
+	cannonCooldown: number
+	dragRotationSensitivity: number
+	bugCapacity: number
+	difficultyModifiers: {
+		easy: number
+		normal: number
+		hard: number
+		apocalypse: number
+	}
+	dyingBugColor: number[]
+}
+
+declare type GameEvent = {
+	stopPropagation(): void
+	score: number
+}
+
+declare type GameEventType = "pause" | "unpause" | "score" | "health"
+
+declare type ScoreSettings = {
+	missedShot: number
+	landedShot: number
+	perSecond: number
+}
+
+declare type ShaderPrograms = {
+	point: WebGLProgram
+	sphere: WebGLProgram
+	rectangle: WebGLProgram
+}
+
+declare type UIMapping = {
+	menu: {
+		pause: HTMLElement		
+	}
+	informationCard: {
+		instructions: HTMLElement
+	}
+	button: {
+		instructions: HTMLElement
+		restart: HTMLElement
+		play: HTMLElement
+		decreaseDifficulty: HTMLElement
+		increaseDifficulty: HTMLElement
+	}
+	textDisplay: {
+		score: HTMLElement
+	}
+}
+
+declare type StyleProperty = [ property: string, value: string ]
+
+declare type ConditionalStyleProperties = {
+	pauseMenu: {
+		hidden: StyleProperty[],
+		shown: StyleProperty[]
+	}
+	infoPanel: {
+		hidden: StyleProperty[],
+		shown: StyleProperty[]
+	}
+}
+
+declare type UIEventType = 
+	"pausebutton" | "instructionsbutton" | "restartbutton" |
+	"startbutton" | "resumebutton" | "decreasedifficultybutton" |
+	"increasedifficultybutton"

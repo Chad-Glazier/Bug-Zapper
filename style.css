@@ -1,0 +1,126 @@
+body {
+	padding: 0;
+	margin: 0;
+	font-family: 'Space Mono', monospace;
+}
+
+#gl-canvas {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+#score {
+	pointer-events: none;
+	position: fixed;
+	top: 1rem;
+	right: 15px;
+	z-index: 3;
+	font-size: 2.5rem;
+	color: white;
+}
+
+#score::before {
+	pointer-events: none;
+	position: fixed;
+	top: 4rem;
+	right: 17px;
+	font-size: 1.5rem;
+	content: 'SCORE';
+}
+
+#menu {
+	--menu-height: clamp(400px, 60%, 600px);
+	--menu-width: clamp(400px, 60%, 600px);
+	width: var(--menu-width);
+	height: var(--menu-height);
+	position: fixed;
+	z-index: 2;
+	top: calc(100vh + 50px);
+	left: calc(50vw - 0.5 * clamp(400px, 60%, 600px));
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	transition: top 400ms ease-in-out;
+	border: 2px solid;
+	border-color: #7efc82;
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+#instructions {
+	--info-panel-width: clamp(400px, 60%, 600px);
+	--info-panel-height: clamp(400px, 60%, 600px);
+	width: var(--info-panel-width);
+	height: var(--info-panel-height);
+	position: fixed;
+	z-index: 3;
+	top: calc(100vh + 50px);
+	left: calc(50vw - 0.5 * clamp(400px, 60%, 600px));
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	transition: top 400ms ease-in-out;
+	border: 2px solid;
+	border-color: #7efc82;
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+button {
+	margin: 10px 10px;
+	font-family: 'Space Mono', monospace;
+	font-size: 1.75rem;
+	width: auto;
+	background-color: rgba(0, 0, 0, 0);
+	color: white;
+	border: 0;
+	transition: all 400ms;
+	text-transform: uppercase;
+}
+
+#menu button:hover {
+	cursor: pointer;
+	color: #7efc82;
+}
+
+#crosshairs {
+	--length: 2rem;
+	position: fixed;
+	width: var(--length);
+	height: var(--length);
+	top: calc(50vh - var(--length) / 2); 
+	/* top: calc(54vh - var(--length) / 2); */
+	left: calc(50vw - var(--length) / 2);
+	z-index: 1;
+	pointer-events: none;
+}
+
+#difficulty-carousel {
+	--carousel-height: min(calc(var(--menu-height) / 2), 150px);
+	width: var(--menu-width);
+	height: var(--carousel-height);
+	position: relative;
+}
+
+#difficulty-carousel .arrowButton {
+	--arrow-button-size: 30px;
+	width: var(--arrow-button-size);
+	height: var(--arrow-button-size);
+	position: absolute;
+	top: calc(var(--carousel-height) / 2 - var(--arrow-button-size) / 2)
+}
+
+#difficulty-carousel .arrowButton #decrease-difficulty-button {
+	left: 0;
+}
+
+#difficulty-carousel .arrowButton #increase-difficulty-button {
+	right: calc(100% - var(--arrow-button-size))
+}

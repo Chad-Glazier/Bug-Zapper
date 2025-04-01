@@ -6,7 +6,7 @@
 /// <reference path="./util/initShaderProgram.js" />
 /// <reference path="./util/renderScene.js" />
 /// <reference path="./constants.js" />
-/// <reference path="./util/GameState.js" />
+/// <reference path="./util/gameState.js" />
 /// <reference path="./util/ui.js" />
 
 function main() {
@@ -65,27 +65,54 @@ function main() {
 
 	// menus
 	const pauseMenu = document.getElementById("menu")
+	const settingsMenu = document.getElementById("settings")
 	// information cards
 	const instructions = document.getElementById("instructions")
 	// buttons
 	const playButton = document.getElementById("play-button")
 	const restartButton = document.getElementById("restart-button")
 	const instructionsButton = document.getElementById("instructions-button")
-	const returnButton = document.getElementById("return-button")
+	const instructionsReturnButton = document.getElementById("instructions-return-button")
+	const settingsReturnButton = document.getElementById("settings-return-button")
 	const increaseDifficultyButton = document.getElementById("increase-difficulty-button")
 	const decreaseDifficultyButton = document.getElementById("decrease-difficulty-button")
+	const settingsButton = document.getElementById("settings-button")
 	// text displays
 	const scoreDisplay = document.getElementById("score-display")
 	const survivorDisplay = document.getElementById("survivor-display")
 	const coverageDisplay = document.getElementById("coverage-display")
 	const timeRemaining = document.getElementById("time-remaining-display")
+	const difficultyText = document.getElementById("difficulty-text")
+	const overdriveText = document.getElementById("overdrive-text")
+	// progress bars
+	const survivorBar = document.getElementById("survivor-progress-bar")
+	const overdriveBar = document.getElementById("overdrive-progress-bar")
+	// slider inputs
+	const mouseSensitivitySlider = document.getElementById("mouse-sensitivity-range")
+	const keySensitivitySlider = document.getElementById("key-sensitivity-range")
 
-	if (pauseMenu == null || instructions == null || playButton == null ||
-		restartButton == null || increaseDifficultyButton == null ||
-		decreaseDifficultyButton == null || scoreDisplay == null ||
-		instructionsButton == null || returnButton == null || 
-		survivorDisplay == null || coverageDisplay == null ||
-		timeRemaining == null
+	if (
+		pauseMenu == null 
+		|| instructions == null 
+		|| playButton == null 
+		|| restartButton == null 
+		|| increaseDifficultyButton == null 
+		|| decreaseDifficultyButton == null 
+		|| scoreDisplay == null 
+		|| instructionsButton == null 
+		|| instructionsReturnButton == null 
+		|| survivorDisplay == null 
+		|| coverageDisplay == null 
+		|| timeRemaining == null 
+		|| survivorBar == null 
+		|| overdriveBar == null 
+		|| settingsReturnButton == null 
+		|| settingsButton == null 
+		|| settingsMenu == null 
+		|| difficultyText == null 
+		|| overdriveText == null
+		|| keySensitivitySlider == null 
+		|| mouseSensitivitySlider == null
 	) {
 		console.error(`One or more necessary elements were not found when setting up the UI.`)
 		return
@@ -95,7 +122,8 @@ function main() {
 	const ui = new UI(
 		{
 			menu: {
-				pause: pauseMenu
+				pause: pauseMenu,
+				settings: settingsMenu
 			},
 			informationCard: {
 				instructions: instructions
@@ -106,13 +134,25 @@ function main() {
 				increaseDifficulty: increaseDifficultyButton,
 				decreaseDifficulty: decreaseDifficultyButton,
 				instructions: instructionsButton,
-				return: returnButton
+				instructionsReturn: instructionsReturnButton,
+				settingsReturn: settingsReturnButton,
+				settings: settingsButton
 			},
 			textDisplay: {
 				score: scoreDisplay,
 				survivor: survivorDisplay,
 				coverage: coverageDisplay,
-				timeRemaining: timeRemaining
+				timeRemaining: timeRemaining,
+				difficulty: difficultyText,
+				overdrive: overdriveText
+			},
+			progressBar: { 
+				survivor: survivorBar,
+				overdrive: overdriveBar
+			},
+			input: {
+				mouseSensitivity: mouseSensitivitySlider,
+				keySensitivity: keySensitivitySlider
 			}
 		},
 		{
@@ -131,6 +171,14 @@ function main() {
 				shown: [
 					["top", "calc(50vh - var(--info-panel-height) / 2)"]
 				]
+			},
+			settings: {
+				hidden: [
+					["top", "calc(100vh + 50px)"]
+				],
+				shown: [
+					["top", "calc(50vh - var(--settings-height) / 2)"]
+				]
 			}
 		}
 	)
@@ -139,33 +187,41 @@ function main() {
 	// Set up the game.
 	//
 
+	/** @type {GameOptions} */
 	const defaultOptions = {
+		overdriveDuration: 6 * 1000,	// overdrive lasts 6 seconds.
+		overdriveTemporalModifier: 0.05,// time moves at 5% during overdrive.
+		overdriveCooldown: 30 * 1000, 	// 30 seconds.
+		timeLimit: 2 * 60 * 1000,  		// 2 minutes, in milliseconds.
+		casualtiesThreshold: 0.20, 		// Casualties are incurred beyond 20% coverage.
+		initialSurvivorCount: 10000, 	// 10K initial survivors.
 		baseSphereRadius: 1,
 		startingDistance: 5,
 		maxDistance: 20,
 		minDistance: 3,
 		refreshRate: 60,
-		frictionCoefficient: 0.15,
+		frictionCoefficient: 0.35,
 		projectileSpeed: 10,
 		bugGrowthRate: Math.PI / 72,
 		bugDeathRate: Math.PI / 2,
 		scoreSettings: {
-			missedShot: -50,
+			missedShot: -100,
 			landedShot: 100,
-			perSecond: 1
+			perSecond: 5,
+			onWin: 1000
 		},
 		bugElevationGap: 0.0032,
 		enableInertia: true,
 		bugSpawnFrequency: 0.65,
-		cannonCooldown: 0.2,
+		cannonCooldown: 0.1,
 		dragRotationSensitivity: 1.0,
 		keyRotationRPM: 12,
 		bugCapacity: 8,
 		difficultyModifiers: {
-			easy: 0.75,
-			normal: 1.0,
-			hard: 1.5,
-			apocalypse: 2.0
+			easy: 1,
+			normal: 2,
+			hard: 3,
+			apocalypse: 4
 		},
 		dyingBugColor: [0.78, 0.24, 0.24, 1.0]
 	}
@@ -183,23 +239,48 @@ function main() {
 	//
 
 	game.on("score", ({ score }) => ui.score = score)
-	// need to manage the game scores (survivors, coverage, etc.) and then
-	// sync it to the displays.
+	game.on("coverage", ({ coverage }) => ui.coverage = coverage)
+	game.on("survivor", ({ survivors }) => {
+		ui.survivorCountProgress = survivors / game.config.initialSurvivorCount
+		ui.survivorCountNumber = survivors
+	})
+	game.on("timeremaining", ({ timeRemaining }) => ui.timeRemaining = timeRemaining)
+	game.on("overdrivecharge", ({ overdriveCharge }) => {
+		ui.overdriveChargeProgress = overdriveCharge
+	})
 
 	//
 	// Set up some controls.
 	//
 
+	window.addEventListener("keydown", ({ key }) => {
+		if (key !== "q") return
+
+		game.activateOverdrive()
+	})
+
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key != "Escape") return
 
-		if (game.isPaused && ui.instructionsVisible) {
-			ui.hideInstructions(() => game.unpause())
-		} else if (game.isPaused) {
-			ui.hidePauseMenu(() => game.unpause())
-		} else {
+		if (!game.isPaused) {
 			game.pause()
 			ui.showPauseMenu()
+			return
+		}
+
+		if (ui.instructionsVisible) {
+			ui.hideInstructions(() => game.unpause())
+			return
+		}
+		
+		if (ui.settingsVisible) {
+			ui.hideSettings(() => game.unpause())
+			return
+		}
+
+		if (ui.pauseMenuVisible) {
+			ui.hidePauseMenu(() => game.unpause())
+			return
 		}
 	})
 
@@ -211,8 +292,12 @@ function main() {
 		ui.hidePauseMenu(() => game.unpause())
 	})
 
-	ui.element.button.return.addEventListener("click", () => {
+	ui.element.button.instructionsReturn.addEventListener("click", () => {
 		ui.hideInstructions(() => ui.showPauseMenu())
+	})
+
+	ui.element.button.settingsReturn.addEventListener("click", () => {
+		ui.hideSettings(() => ui.showPauseMenu())
 	})
 
 	ui.element.button.restart.addEventListener("click", () => {
@@ -223,6 +308,10 @@ function main() {
 
 	ui.element.button.instructions.addEventListener("click", () => {
 		ui.hidePauseMenu(() => ui.showInstructions())
+	})
+
+	ui.element.button.settings.addEventListener("click", () => {
+		ui.hidePauseMenu(() => ui.showSettings())
 	})
 
 	canvas.addEventListener("wheel", (ev) => {
@@ -244,9 +333,67 @@ function main() {
 		ev.preventDefault()
 	})
 
+	window.addEventListener("keydown", (ev) => {
+		if (ev.key !== "f") return
+
+		game.launchNuke()
+	})
+
+	ui.element.button.decreaseDifficulty.addEventListener("click", () => {
+		switch (game.difficultySetting) {
+		case "easy":
+			return
+		case "normal":
+			ui.difficulty = "easy"
+			game.difficultySetting = "easy"
+			break
+		case "hard": 
+			ui.difficulty = "normal"
+			game.difficultySetting = "normal"
+			break
+		case "apocalypse": 
+			ui.difficulty = "hard"
+			game.difficultySetting = "hard"
+			break
+		}
+	})
+
+	ui.element.button.increaseDifficulty.addEventListener("click", () => {
+		switch (game.difficultySetting) {
+		case "easy":
+			ui.difficulty = "normal"
+			game.difficultySetting = "normal"
+			break
+		case "normal":
+			ui.difficulty = "hard"
+			game.difficultySetting = "hard"
+			break
+		case "hard": 
+			ui.difficulty = "apocalypse"
+			game.difficultySetting = "apocalypse"
+			break
+		case "apocalypse": 
+			return
+		}
+	})
+
+	ui.element.input.keySensitivity.addEventListener("input", (ev) => {
+		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) return
+		
+		game.keySensitivityMultiplier = parseFloat(ui.element.input.keySensitivity.value)
+	})
+
+	ui.element.input.mouseSensitivity.addEventListener("input", (ev) => {
+		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) return
+		
+		game.mouseSensitivityMultiplier = parseFloat(ui.element.input.keySensitivity.value)
+	})
+
+
 	//
 	// Start the game
 	//
+	
 	game.start()
 	game.pause()
 	ui.showPauseMenu()
@@ -258,7 +405,7 @@ function main() {
  * @param {GameState} game
  */
 function enableMouseDrag(game) {
-	const canvas = game.renderingContext.canvas
+	const canvas = game.config.renderingContext.canvas
 
 	if (canvas instanceof OffscreenCanvas) {
 		return
@@ -297,7 +444,7 @@ function enableMouseDrag(game) {
 
 		// By default, there is one half of a rotation per length of the canvas
 		// dragged. The sensitivity setting is also factored in.
-		const rotations = game.dragSensitivity * magnitude / (2 * canvasLength)
+		const rotations = game.dragSensitivity * magnitude / (2 * canvasLength) * game.mouseSensitivityMultiplier
 
 		// The axis of rotation ought to be orthogonal to the displacement
 		// of the mouse in order to feel natural. It's magnitude is irrelevant.
@@ -388,7 +535,7 @@ function enableKeyRotationControls(game) {
 			game.setMomentum([0, 0, 1], 0)
 			game.setInertia(originalMomentum.axis, originalMomentum.rpm)
 		} else {
-			game.setMomentum([x, y, 0], game.keyRotationRPM)
+			game.setMomentum([x, y, 0], game.config.keyRotationRPM * game.keySensitivityMultiplier)
 		}
 	}
 

@@ -2,17 +2,6 @@
 /// <reference path="./types.d.ts" />
 /// <reference path="../lib_types/MV.d.ts" />
 
-/** @type {(...vectors: number[][]) => number[]} */
-const elementwiseAddition = (...vectors) => {
-	return vectors.reduce((u, v) => {
-		if (u.length != v.length) {
-			console.log(`Cannot add two vectors of different lengths.`)
-			return []
-		}
-		return u.map((_, idx) => u[idx] + v[idx])			
-	})
-}
-
 /**
  * Defines the vertices of a rectangle in 3D space. This function does not
  * offer full control. Instead, the following conditions are presumed:

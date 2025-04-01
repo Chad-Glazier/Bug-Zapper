@@ -9,6 +9,8 @@ declare type Options = {
 	 */
 	rotate?: number[][]
 	distance?: number
+	spherePointColor?: number[]
+	sphereColor?: number[]
 }
 
 /**
@@ -130,6 +132,9 @@ declare type Projectile = {
 	 * The distance between the projectile and the origin
 	 */
 	radialDistance: number
+
+	sizeFactor?: number
+	isNuke?: boolean
 }
 
 declare type Rectangle = {
@@ -142,7 +147,19 @@ declare type DyingBug = Bug & {
 	innerArcLength: number
 }
 
+declare type GameDifficulty = 
+	"easy" 
+	| "normal" 
+	| "hard" 
+	| "apocalypse"
+
 declare type GameOptions = {
+	overdriveDuration: number
+	overdriveTemporalModifier: number
+	overdriveCooldown: number
+	casualtiesThreshold: number
+	initialSurvivorCount: number
+	timeLimit: number
 	keyRotationRPM: number
 	baseSphereRadius: number
 	startingDistance: number
@@ -169,20 +186,37 @@ declare type GameOptions = {
 	dyingBugColor: number[]
 }
 
+declare type GameConfig = GameOptions & {
+	shaders: ShaderPrograms
+	renderingContext: WebGLRenderingContext
+	baseSphere: Sphere
+}
+
 declare type GameEvent = {
 	stopPropagation(): void
 	score: number
 	coverage: number
 	survivors: number
 	timeRemaining: number
+	overdriveCharge: number
 }
 
-declare type GameEventType = "pause" | "unpause" | "score" | "health"
+declare type GameEventType = 
+	"pause" 
+	| "unpause" 
+	| "score" 
+	| "survivor" 
+	| "coverage" 
+	| "timeremaining"
+	| "overdrivecharge"
+	| "activateoverdrive"
+	| "deactivateoverdrive"
 
 declare type ScoreSettings = {
 	missedShot: number
 	landedShot: number
 	perSecond: number
+	onWin: number
 }
 
 declare type ShaderPrograms = {
@@ -193,7 +227,8 @@ declare type ShaderPrograms = {
 
 declare type UIMapping = {
 	menu: {
-		pause: HTMLElement		
+		pause: HTMLElement	
+		settings: HTMLElement	
 	}
 	informationCard: {
 		instructions: HTMLElement
@@ -204,13 +239,25 @@ declare type UIMapping = {
 		play: HTMLElement
 		decreaseDifficulty: HTMLElement
 		increaseDifficulty: HTMLElement
-		return: HTMLElement
+		instructionsReturn: HTMLElement
+		settingsReturn: HTMLElement
+		settings: HTMLElement
 	}
 	textDisplay: {
 		score: HTMLElement
 		survivor: HTMLElement
 		coverage: HTMLElement
 		timeRemaining: HTMLElement
+		difficulty: HTMLElement
+		overdrive: HTMLElement
+	}
+	progressBar: {
+		survivor: HTMLElement
+		overdrive: HTMLElement
+	}
+	input: {
+		keySensitivity: HTMLElement
+		mouseSensitivity: HTMLElement
 	}
 }
 
@@ -224,10 +271,18 @@ declare type ConditionalStyleProperties = {
 	infoPanel: {
 		hidden: StyleProperty[],
 		shown: StyleProperty[]
+	},
+	settings: {
+		hidden: StyleProperty[],
+		shown: StyleProperty[]
 	}
 }
 
 declare type UIEventType = 
-	"pausebutton" | "instructionsbutton" | "restartbutton" |
-	"startbutton" | "resumebutton" | "decreasedifficultybutton" |
-	"increasedifficultybutton"
+	"pausebutton" 
+	| "instructionsbutton" 
+	| "restartbutton" 
+	| "startbutton" 
+	| "resumebutton" 
+	| "decreasedifficultybutton" 
+	| "increasedifficultybutton"

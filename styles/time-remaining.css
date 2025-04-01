@@ -1,0 +1,11 @@
+#time-remaining {
+	top: 1rem;
+	left: 15px;
+	font-size: 4rem;
+	width: 10rem;
+}
+
+#time-remaining-display::before {
+	content: 'TIME UNTIL EVAC.';
+	bottom: -4rem;
+}

@@ -1,0 +1,51 @@
+#instructions {
+	--info-panel-width: clamp(400px, 70%, 750px);
+	--info-panel-height: clamp(400px, 80%, 800px);
+	width: var(--info-panel-width);
+	height: var(--info-panel-height);
+	position: fixed;
+	z-index: 4;
+	top: calc(100vh + 50px);
+	left: calc(50vw - 0.5 * var(--info-panel-width));
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	transition: top 400ms ease-in-out;
+	border: 2px solid;
+	border-color: var(--greeen);
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.2);
+	color: white;
+	padding: 10px;
+}
+
+#instructions-inner {
+	overflow-y: scroll;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	
+}
+
+#instructions tr {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+	margin: 10px 0;
+}
+
+#instructions td {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+#instructions-return-button {
+	position: absolute;
+	bottom: -60px;
+	right: 0;
+	border-bottom: 2px solid var(--greeen);
+}

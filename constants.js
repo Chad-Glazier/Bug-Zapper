@@ -76,6 +76,8 @@ const SCORE_SETTINGS = {
 	perSecond: 1
 }
 
+const OVERDRIVE_BLUE = [0.290, 0.847, 1.00, 1.00]
+
 /**
  * Determines how sensitive the sphere is to rotation from clicking and
  * dragging it. Values above `1` will increase the sensitivity above it's

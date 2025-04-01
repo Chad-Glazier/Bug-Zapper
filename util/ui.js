@@ -42,8 +42,14 @@ class UI {
 		 */
 		this.inAnimation = false
 
+		/** @private @type {boolean} */
 		this.instructionsShown = false
+		/** @private @type {boolean} */
 		this.pauseMenuShown = false
+		/** @private @type {boolean} */
+		this.settingsShown = false
+
+		this.difficultyTextChangeInterval = NaN
 	}
 
 	/**
@@ -62,9 +68,41 @@ class UI {
 	 * 
 	 * @param {number} newSurvivorCount The updated survivor count to display.
 	 */
-	set survivorCount(newSurvivorCount) {
+	set survivorCountNumber(newSurvivorCount) {
 		this.element.textDisplay.survivor.textContent =
 			Math.round(newSurvivorCount).toString()
+	}
+
+	/**
+	 * Sets the progress on the survivor progress bar in the UI.
+	 * 
+	 * @param {number} newProgress A number from `0` to `1` representing the
+	 * percentage of the progress bar to fill.
+	 */
+	set survivorCountProgress(newProgress) {
+		this.element.progressBar.survivor.style.setProperty(
+			"--progress",
+			newProgress.toString()
+		)
+	}
+
+	/**
+	 * Sets the progress on the overdrive progress bar in the UI.
+	 * 
+	 * @param {number} newProgress A number representing the percentage of the 
+	 * progress bar to fill, where `0` is 0% and `1` is 100%. Note that values
+	 * above 100% are allowed and will widen the progress bar.
+	 */
+	set overdriveChargeProgress(newProgress) {
+		this.element.progressBar.overdrive.style.setProperty(
+			"--progress",
+			newProgress.toString()
+		)
+		if (newProgress == 1) {
+			this.element.textDisplay.overdrive.innerHTML = `READY`
+		} else {
+			this.element.textDisplay.overdrive.innerText = ""
+		}
 	}
 
 	/**
@@ -74,8 +112,8 @@ class UI {
 	 * updated coverage to display.
 	 */
 	set coverage(newCoverage) {
-		newCoverage = Math.floor(newCoverage * 100)
-		this.element.textDisplay.survivor.textContent =
+		newCoverage = Math.min(Math.ceil(newCoverage * 100), 100)
+		this.element.textDisplay.coverage.textContent =
 			`${newCoverage}%`
 	}
 
@@ -88,8 +126,25 @@ class UI {
 		const minutes = Math.floor(newTimeRemaining / 1000 / 60)
 		const seconds = Math.floor(newTimeRemaining / 1000 - minutes * 60)
 
-		this.element.textDisplay.survivor.textContent =
+		this.element.textDisplay.timeRemaining.textContent =
 			`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+	}
+
+	/**
+	 * The game's difficulty setting.
+	 * 
+	 * @param {GameDifficulty} newDifficulty The new difficulty setting.
+	 */
+	set difficulty(newDifficulty) {
+		if (this.inAnimation) return
+
+		clearInterval(this.difficultyTextChangeInterval)
+
+		this.difficultyTextChangeInterval = transitionText(
+			this.element.textDisplay.difficulty,
+			newDifficulty,
+			200
+		)
 	}
 
 	/**
@@ -178,11 +233,38 @@ class UI {
 		this.instructionsShown = true
 	}
 
+	/**
+	 * @param {(() => void) | null} uponCompletion An optional callback 
+	 * function that will be executed when the animation finishes.
+	 */
+	hideSettings(uponCompletion = null) {
+		this.applyStyles(
+			this.element.menu.settings,
+			this.conditionalStyles.settings.hidden,
+			ANIMATION_TIME,
+			uponCompletion
+		)
+		this.settingsShown = false
+	}
+
+	showSettings() {
+		this.applyStyles(
+			this.element.menu.settings,
+			this.conditionalStyles.settings.shown,
+			ANIMATION_TIME
+		)
+		this.settingsShown = true
+	}
+
 	get instructionsVisible() {
 		return this.instructionsShown
 	}
 
 	get pauseMenuVisible() {
-		return this.pauseMenuVisible
+		return this.pauseMenuShown
+	}
+
+	get settingsVisible() {
+		return this.settingsShown
 	}
 }

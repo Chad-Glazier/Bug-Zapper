@@ -1,0 +1,8 @@
+#coverage {
+	top: 1rem;
+	right: 15px;
+}
+
+#coverage-display::before {
+	content: 'COVERAGE'
+}

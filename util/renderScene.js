@@ -5,7 +5,7 @@
 /// <reference path="./sphere.js" />
 /// <reference path="../constants.js" />
 /// <reference path="./rectangle.js" />
-/// <reference path="./transform.js" />
+/// <reference path="./misc.js" />
 
 /**
  * 
@@ -39,13 +39,19 @@ function renderScene(
 	if (options == null) {
 		options = {
 			rotate: mat4(),
-			distance: 6
+			distance: 6,	
 		}
 	}
 	if (options.rotate == undefined) options.rotate = mat4()
 	if (options.distance == undefined) options.distance = 6
 	if (options.distance > MAX_DISTANCE) options.distance = MAX_DISTANCE
 	if (options.distance < MIN_DISTANCE) options.distance = MIN_DISTANCE
+	if (options.spherePointColor == undefined) {
+		options.spherePointColor = [0.49, 0.98, 0.50, 1.0]
+	}
+	if (options.sphereColor == undefined) {
+		options.sphereColor = [0, 0, 0, 1]
+	}
 
 	// Clear the canvas.
 	gl.clearColor(0, 0, 0, 1)
@@ -57,7 +63,8 @@ function renderScene(
 		points: {
 			aVertexPosition: gl.getAttribLocation(pointShaderProgram, "aVertexPosition"),
 			uModelViewMatrix: gl.getUniformLocation(pointShaderProgram, "uModelViewMatrix"),
-			uProjectionMatrix: gl.getUniformLocation(pointShaderProgram, "uProjectionMatrix")
+			uProjectionMatrix: gl.getUniformLocation(pointShaderProgram, "uProjectionMatrix"),
+			uColor: gl.getUniformLocation(pointShaderProgram, "uColor")
 		},
 		baseSphere: {
 			aVertexPosition: gl.getAttribLocation(sphereShaderProgram, "aVertexPosition"),
@@ -109,7 +116,7 @@ function renderScene(
 		false,
 		flatten(modelViewMatrix),
 	)
-	gl.uniform4fv(loc.baseSphere.uColor, new Float32Array(BASE_SPHERE_COLOR))
+	gl.uniform4fv(loc.baseSphere.uColor, new Float32Array(options.sphereColor))
 
 	gl.drawElements(gl.TRIANGLES, baseSphere.indices.length, gl.UNSIGNED_SHORT, 0)
 
@@ -131,6 +138,7 @@ function renderScene(
 		false,
 		flatten(modelViewMatrix),
 	)
+	gl.uniform4fv(loc.points.uColor, new Float32Array(options.spherePointColor))
 
 	gl.drawArrays(gl.POINTS, 0, baseSphere.vertices.length)
 
@@ -176,12 +184,15 @@ function renderScene(
 
 	// Draw the projectiles
 	for (const projectile of projectiles) {
-		const projectileRectangle = rectangle(projectile.relativeAxis, projectile.radialDistance, 0.1, 0.01)
+		const sizeFactor = projectile.sizeFactor ?? 1
+		const projectileRectangle = rectangle(
+			projectile.relativeAxis, projectile.radialDistance, 
+			0.1 * sizeFactor, 0.01 * sizeFactor
+		)
 
 		let projectileMVMatrix = mat4()
 		projectileMVMatrix = mult(options.rotate, projectileMVMatrix)
 		projectileMVMatrix = mult(translate(0, 0, -1 * options.distance), projectileMVMatrix)
-		// projectileMVMatrix = mult(translate(0, -0.15, 0), projectileMVMatrix)
 
 		gl.useProgram(rectangleShaderProgram)
 

@@ -1,0 +1,95 @@
+/* 
+	Container for all progress bars 
+*/
+
+.progress-bars {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	padding: 1rem;
+	
+	display: flex;
+	flex-direction: column;
+	align-items: first baseline;
+
+	pointer-events: none;
+}
+
+
+/*
+	Individual progress bars.
+*/
+
+.progress-bar {
+	--width: 300px;
+	--height: 30px;
+	--outer-color: rgb(126, 252, 130);
+	--inner-color: rgb(189, 78, 78);
+	--caption-color: #fff;
+	--number-color: rgb(255, 255, 255);
+	--padding: 2px;
+	--progress: 1.0;
+	--caption: 'Caption';
+	--caption-size: 2.2rem;
+}
+
+#survivor-progress-bar {
+	--inner-color: rgb(189, 0, 0);
+	--caption-color: var(--inner-color);
+	--caption: 'Survivors';
+	--progress: 0.8
+}
+
+#overdrive-progress-bar {
+	--inner-color: rgb(74, 216, 255);
+	--caption-color: var(--inner-color);
+	--caption: 'Overdrive';
+	--progress: 0.1;
+}
+
+.progress-bar {
+	position: relative;
+
+	background-color: rgba(0, 0, 0, 0);
+	width: calc(max(1, var(--progress)) * (var(--width) + 2 * var(--padding)));
+	height: calc(var(--height) + 2 * var(--padding));
+	border: 2px solid var(--outer-color);
+
+	margin-bottom: var(--caption-size);
+
+	border-radius: 10px;
+}
+
+.progress-bar::after {
+	content: var(--caption);
+	position: absolute;
+	left: 5px;
+	bottom: calc(-1 * var(--caption-size));
+	font-family: 'Space Mono', monospace;
+	font-size: 1.5rem;
+	text-transform: uppercase;
+	color: var(--caption-color);
+}
+
+.progress-bar .progress-bar-inner {
+	background-color: var(--inner-color);
+
+	position: absolute;
+	top: var(--padding);
+	left: var(--padding);
+	height: calc(var(--height));
+	width: calc((var(--width)) * var(--progress));
+
+	border-radius: 6px;
+}
+
+.progress-bar .progress-bar-text {
+	position: absolute;
+	top: 0;
+	right: 5px;
+	background-color: rgba(0, 0, 0, 0);
+	color: var(--number-color);
+	text-shadow: 2px 2px 4px #000000;
+	font-family: 'Space Mono', monospace;
+	font-size: calc(var(--height) * 0.75);
+}

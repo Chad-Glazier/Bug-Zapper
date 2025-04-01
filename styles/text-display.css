@@ -1,0 +1,20 @@
+.text-display {
+	pointer-events: none;
+	position: fixed;
+	font-size: 2.5rem;
+	color: white;
+	z-index: 3;
+}
+
+.text-display span {
+	position: relative;
+}
+
+.text-display span::before {
+	pointer-events: none;
+	position: absolute;
+	bottom: -1.5rem;
+	right: 0px;
+	font-size: 1.5rem;
+	content: 'SCORE';
+}

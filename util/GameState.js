@@ -19,6 +19,25 @@ class GameState {
 	 * game settings.
 	 */
 	constructor(renderingContext, shaders, options) {
+		// Refactoring note: make a this.options thing, rewrite the stuff
+		// then make a this.state object to hold the rest.
+
+		/**
+		 * The options that the game was initialized with.
+		 * 
+		 * @public
+		 * @readonly
+		 * @type {GameConfig}
+		 */
+		this.config = {
+			...options, shaders, renderingContext,
+			baseSphere: sphere(
+				SPHERE_DIVISIONS, { 
+					radialDistance: options.baseSphereRadius 
+				}
+			)
+		}
+
 		/** 
 		 * The (living) bugs in the game.
 		 * 
@@ -44,40 +63,13 @@ class GameState {
 		this.projectiles = []
 
 		/**
-		 * The WebGL rendering context the game should be rendered on.
-		 * 
-		 * @public
-		 * @readonly
-		 * @type {WebGLRenderingContext}
-		 */
-		this.renderingContext = renderingContext
-
-		/**
-		 * A collection of shader programs used in rendering the game.
-		 * 
-		 * @private
-		 * @type {ShaderPrograms}
-		 */
-		this.shader = shaders
-
-		/**
-		 * The radius of the base sphere.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.baseSphereRadius = options.baseSphereRadius
-
-		/**
 		 * The base sphere for the game. This is the sphere at the "center"
 		 * where the bugs spawn.
 		 * 
 		 * @private
 		 * @type {Sphere}
 		 */
-		this.baseSphere = sphere(
-			SPHERE_DIVISIONS, { radialDistance: this.baseSphereRadius }
-		)
+
 
 		/**
 		 * The rotation matrix that defines the orientation of the game
@@ -97,33 +89,6 @@ class GameState {
 		 * @type {number}
 		 */
 		this.distance = options.startingDistance
-
-		/**
-		 * The minimum allowed distance between the camera and the center of
-		 * the base sphere.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.minDistance = options.minDistance
-
-		/**
-		 * The maximum allowed distance between the camera and the center of
-		 * the base sphere.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.maxDistance = options.maxDistance
-
-		/**
-		 * The number of times that the game is re-rendered per second. You
-		 * could also call this the frames per second.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.refreshRate = options.refreshRate
 
 		/**
 		 * Stores the game time in milliseconds.
@@ -163,41 +128,6 @@ class GameState {
 		this.inertia = { axis: [0, 0, 1], rpm: 0}
 
 		/**
-		 * Defines the coefficient of friction used to decrease the sphere's
-		 * rotational inertia over time. This does not affect the `momentum`.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.frictionCoefficient = options.frictionCoefficient
-
-		/**
-		 * Defines the speed of the projectiles in terms of units per second.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.projectileSpeed = options.projectileSpeed
-
-		/**
-		 * Defines the growth rate of the bugs in terms of arc length (radians)
-		 * per second.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.bugGrowthRate = options.bugGrowthRate
-
-		/**
-		 * Defines the growth rate of the dying bugs' inner radius, in terms of 
-		 * arc length (radians) per second.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.bugDeathRate = options.bugDeathRate
-
-		/**
 		 * Stores the current game score.
 		 * 
 		 * @private
@@ -206,46 +136,12 @@ class GameState {
 		this.score = 0
 
 		/**
-		 * Defines the settings for how score is changed by certain events.
-		 * 
-		 * @private
-		 * @type {ScoreSettings}
-		 */
-		this.scoreSettings = options.scoreSettings
-
-		/**
-		 * Defines the elevation gap between each bug. This should be a
-		 * positive value to avoid overlapping polygons.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.bugElevationGap = options.bugElevationGap
-
-		/**
 		 * Stores the (game) time when the last bug was spawned.
 		 * 
 		 * @private
 		 * @type {number}
 		 */
 		this.timeOfLastBug = 0
-
-		/**
-		 * How many bugs should spawn per second.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.bugSpawnFrequency = options.bugSpawnFrequency
-
-		/**
-		 * Determines the minimum number of seconds allowed between cannon 
-		 * shots.
-		 * 
-		 * @private
-		 * @type {number}
-		 */
-		this.cannonCooldown = options.cannonCooldown
 
 		/**
 		 * Stores the `time` at which the most recent cannon shot was fired.
@@ -283,28 +179,51 @@ class GameState {
 		this.gameLoop = NaN
 
 		/**
-		 * How sensitive the sphere should be to rotations induced by dragging
-		 * it.
+		 * The number of survivors lost to the bugs.
 		 * 
 		 * @private
+		 * @type {number}
 		 */
-		this.dragRotationSensitivity = options.dragRotationSensitivity
+		this.casualties = 0
 
 		/**
-		 * Defines an upper limit on the number of bugs allowed at any one 
-		 * time.
+		 * The number of additional survivors discovered.
+		 * 
+		 * @private
+		 * @type {number}
 		 */
-		this.bugCapacity = options.bugCapacity
+		this.newSurvivors = 0
 
 		/**
-		 * Determines the color of dying bugs.
+		 * Indicates that the bugs have been fully eradicated. No new bugs
+		 * should spawn until a new game is started.
 		 */
-		this.dyingBugColor = options.dyingBugColor
+		this.bugsEradicated = false
 
 		/**
-		 * Determines the RPM used for rotations by holding down keys.
+		 * Determines the game difficulty
+		 * 
+		 * @private
+		 * @type {GameDifficulty}
 		 */
-		this.keyRotationRPM = options.keyRotationRPM
+		this.difficulty = "normal"
+
+		/**
+		 * A number from `0` to `1` representing the charge of the overdrive
+		 * ability, where `1` is fully charged.
+		 * 
+		 * @type {number}
+		 */
+		this.overdriveCharge = 0
+
+		/**
+		 * A boolean flag marking whether or not the overdrive ability is
+		 * active.
+		 */
+		this.overdriveActive = false
+
+		this.mouseSensitivityMultiplier = 1.0
+		this.keySensitivityMultiplier = 1.0
 	}
 
 	/**
@@ -313,18 +232,36 @@ class GameState {
 	 * @private
 	 */
 	render() {
+		let spherePointColor = [
+			this.coverage,
+			1 - this.coverage,
+			0,
+			1
+		]
+		let sphereColor = [0.2 * this.coverage, 0, 0, 1]
+		if (this.overdriveActive) {
+			spherePointColor = OVERDRIVE_BLUE
+			sphereColor = OVERDRIVE_BLUE.map(x => x * 0.2)
+			sphereColor[3] = 1
+		}
+		if (this.bugsEradicated) {
+			spherePointColor = [0, 1, 0, 1]
+		}
+
 		renderScene(
-			this.renderingContext,
-			this.baseSphere,
-			this.shader.point,
-			this.shader.sphere,
-			this.shader.rectangle,
+			this.config.renderingContext,
+			this.config.baseSphere,
+			this.config.shaders.point,
+			this.config.shaders.sphere,
+			this.config.shaders.rectangle,
 			this.bugs,
 			this.dyingBugs,
 			this.projectiles, 
 			{
 				rotate: this.rotation,
-				distance: this.distance
+				distance: this.distance,
+				spherePointColor: spherePointColor,
+				sphereColor: sphereColor
 			}
 		)
 	}
@@ -342,48 +279,133 @@ class GameState {
 	 * game clock by.
 	 */
 	advanceTime(milliseconds) {
-		this.time += milliseconds
+		const {
+			timeLimit,
+			scoreSettings,
+			casualtiesThreshold,
+			initialSurvivorCount,
+			frictionCoefficient,
+			projectileSpeed,
+			bugSpawnFrequency,
+			bugCapacity,
+			bugGrowthRate,
+			bugElevationGap,
+			bugDeathRate,
+			baseSphereRadius,
+			dyingBugColor,
+			overdriveTemporalModifier,
+			overdriveCooldown,
+			overdriveDuration
+		} = this.config
+
+		this.time = Math.min(this.time + milliseconds, this.config.timeLimit)
 		const seconds = milliseconds / 1000
 		const minutes = seconds / 60
 		const originalScore = this.score
+		const originalSurvivorCount = this.survivorCount
+		const originalCoverage = this.coverage
+		const originalOverdriveCharge = this.overdriveCharge
 
-		// Increment score (if set)
-		this.score += this.scoreSettings.perSecond * seconds
+		// Get the "real" time, without the overdrive modifier. This is so that
+		// we can apply rotations and stuff without slowing it down during
+		// overdrive.
+		const real = {
+			milliseconds, seconds, minutes
+		}
+		if (this.overdriveActive) {
+			for (const unit in real) {
+				real[unit] /= overdriveTemporalModifier
+			}
+		}
+
+		// Progress the overdrive cooldown.
+		if (!this.overdriveActive) {
+			this.overdriveCharge += milliseconds / overdriveCooldown
+			this.overdriveCharge = Math.min(1, this.overdriveCharge)
+		} else {
+			this.overdriveCharge -= real.milliseconds / overdriveDuration
+			this.overdriveCharge = Math.max(0, this.overdriveCharge)
+		}
+
+		// Handle overdrive ending
+		if (this.overdriveCharge == 0) {
+			this.overdriveActive = false
+			this.handleEvent("deactivateoverdrive")
+		}
+
+		// This produces a modifier for the bug spawn frequency and growth rate
+		// based on the temporal progress and difficulty setting.
+		const timeFactor = this.time / this.config.timeLimit
+		const difficultyFactor = this.difficultyModifier
+		const bugGrowthRateModifier = Math.min(1.5, 1 + timeFactor * difficultyFactor)
+		const bugSpawnFrequencyModifier = 1 + timeFactor * difficultyFactor
+		const bugCapacityModifier = 1 + timeFactor * difficultyFactor
+		const casualtiesModifier = 1 + timeFactor * difficultyFactor * 2
+
+		// Increment score if the game is still going
+		if (this.time < timeLimit) {
+			this.score += scoreSettings.perSecond * seconds
+		}
+
+		// Calculate casualties / newly discovered survivors. Do not change
+		// these values if the game is ended.
+		if (this.time < timeLimit) {
+			if (originalCoverage >= casualtiesThreshold && this.survivorCount > 0) {
+				this.casualties += Math.min(
+					(0.05 * initialSurvivorCount) * 
+					(originalCoverage - casualtiesThreshold) * 
+					seconds *
+					casualtiesModifier,
+					this.survivorCount
+				)
+			} else {
+				this.newSurvivors += 
+					(0.002 * this.survivorCount) * 
+					(casualtiesThreshold - originalCoverage) * seconds
+			}
+		}
 
 		// Apply rotation based on the current rotational momentum.
 		this.rotation = mult(
-			rotate(360 * this.momentum.rpm * minutes, this.momentum.axis),
+			rotate(360 * this.momentum.rpm * real.minutes, this.momentum.axis),
 			this.rotation
 		)
 
 		// Apply rotation based on the current rotational inertia.
 		if (this.momentum.rpm == 0 && this.inertia.rpm > 0) {
 			this.rotation = mult(
-				rotate(360 * this.inertia.rpm * minutes, this.inertia.axis),
+				rotate(360 * this.inertia.rpm * real.minutes, this.inertia.axis),
 				this.rotation
 			)
-			this.inertia.rpm *= (1 - this.frictionCoefficient)
+			this.inertia.rpm *= (1 - frictionCoefficient)
 		}
 
 		// Advance the projectiles.
 		this.projectiles = this.projectiles.map(projectile => {
-			projectile.radialDistance -= this.projectileSpeed * seconds
+			projectile.radialDistance -= projectileSpeed * seconds
 			return projectile
 		})
 
 		// Spawn a new bug if necessary.
 		const secondsSinceLastBug = (this.time - this.timeOfLastBug) / 1000
-		const bugSpawnCooldown = 1 / this.bugSpawnFrequency
-		if (secondsSinceLastBug >= bugSpawnCooldown && this.bugs.length < this.bugCapacity) {
+		const bugSpawnCooldown = 1 / (bugSpawnFrequency * bugSpawnFrequencyModifier)
+		if (secondsSinceLastBug >= bugSpawnCooldown && 
+			this.bugs.length < bugCapacity * bugCapacityModifier && 
+			!this.bugsEradicated
+		) {
 			this.timeOfLastBug = this.time
 			let bugRotation = mat4()
 			bugRotation = mult(rotate(Math.random() * 360, [1, 0, 0]), bugRotation)
 			bugRotation = mult(rotate(Math.random() * 360, [0, 1, 0]), bugRotation)
 			bugRotation = mult(rotate(Math.random() * 360, [0, 0, 1]), bugRotation)
+			let bugColor = [Math.random(), Math.random(), Math.random()]
+			// all bugs will be equally "bright." This keeps them from blending into the sphere.
+			bugColor = normalize(bugColor)
+			bugColor.push(1)
 			this.bugs.push({
 				rotationMatrix: bugRotation,
 				arcLength: 0,
-				color: [Math.random(), Math.random(), Math.random(), 1],
+				color: bugColor,
 				elevation: this.bugs.length,
 				spawnTime: this.time
 			})
@@ -391,20 +413,20 @@ class GameState {
 
 		// Grow the bugs and set their elevation to avoid overlap.
 		this.bugs = this.bugs.map((bug, i) => {
-			const increment = this.bugGrowthRate * seconds
+			const increment = bugGrowthRate * bugGrowthRateModifier * seconds
 			if (bug.arcLength + increment <= Math.PI) {
 				bug.arcLength += increment
 			} else {
 				bug.arcLength = Math.PI
 			}
-			bug.elevation = (i + 1) * this.bugElevationGap
+			bug.elevation = (i + 1) * bugElevationGap
 			return bug
 		})
 
 		// Grow the inner arc length of the dying bugs. If any of them are
 		// fully dead, delete them from the game.
 		this.dyingBugs.map(bug => {
-			bug.innerArcLength += this.bugDeathRate * seconds
+			bug.innerArcLength += bugDeathRate * seconds
 		})
 		this.dyingBugs = this.dyingBugs.filter(({ innerArcLength, arcLength}) => {
 			return innerArcLength < arcLength
@@ -412,16 +434,30 @@ class GameState {
 
 		// Check for collisions.
 		const collidingProjectiles = this.projectiles.filter(({ radialDistance }) => {
-			return radialDistance <= this.baseSphereRadius
+			return radialDistance <= baseSphereRadius
 		})
 		for (let projectile of collidingProjectiles) {
 			this.projectiles = this.projectiles.filter(el => el != projectile)
-			const bugsHit = this.bugs.filter(bug => willCollide(projectile, bug))
-			if (bugsHit.length == 0) {
-				this.score += this.scoreSettings.missedShot
+
+			if (projectile.isNuke) {
+				this.score += this.config.scoreSettings.onWin
+				this.bugsEradicated = true
+				this.bugs.forEach(bug => this.dyingBugs.push({
+					...bug,
+					deathTime: this.time,
+					innerArcLength: 0,
+					color: dyingBugColor
+				}))
+				this.bugs = []
 				continue
 			}
-			this.score += this.scoreSettings.landedShot
+
+			let bugsHit = this.bugs.filter(bug => willCollide(projectile, bug))
+			if (bugsHit.length == 0) {
+				this.score += scoreSettings.missedShot
+				continue
+			}
+			this.score += scoreSettings.landedShot
 			const targetBug = bugsHit.reduce((bug1, bug2) => {
 				if (bug1.elevation > bug2.elevation) {
 					return bug1
@@ -433,13 +469,34 @@ class GameState {
 				...targetBug,
 				deathTime: this.time,
 				innerArcLength: 0,
-				color: this.dyingBugColor
+				color: dyingBugColor
 			})
 		}
 
+		// Emit relevant events
 		if (this.score != originalScore) {
 			this.handleEvent("score")
 		}
+		if (this.survivorCount != originalSurvivorCount) {
+			this.handleEvent("survivor")
+		}
+		if (this.overdriveCharge != originalOverdriveCharge) {
+			this.handleEvent("overdrivecharge")
+		}
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
+	}
+
+	/**
+	 * Activates overdrive, if the charge is full.
+	 * 
+	 * @public
+	 */
+	activateOverdrive() {
+		if (this.overdriveCharge != 1) return
+		
+		this.overdriveActive = true
+		this.handleEvent("activateoverdrive")
 	}
 
 	/**
@@ -450,8 +507,12 @@ class GameState {
 	launchProjectile() {
 		if (this.paused) return
 
-		const secondsSinceLastShot = (this.time - this.timeOfLastProjectile) / 1000
-		if (secondsSinceLastShot < this.cannonCooldown) {
+		let secondsSinceLastShot = (this.time - this.timeOfLastProjectile) / 1000
+		if (this.overdriveActive) {
+			secondsSinceLastShot /= this.config.overdriveTemporalModifier
+		}
+
+		if (secondsSinceLastShot < this.config.cannonCooldown) {
 			return
 		}
 
@@ -569,18 +630,13 @@ class GameState {
 			return
 		}
 
-		const totalBugArea = this.bugs
-			.map(({ arcLength }) => 
-				sphereSurfaceArea(arcLength, this.baseSphereRadius)
-			)
-			.reduce((a, b) => a + b, 0)
-		const baseSphereArea = 4 * Math.PI * Math.pow(this.baseSphereRadius, 2)
-		const coverage = Math.min(totalBugArea / baseSphereArea, 1)
-
 		let continuePropagation = true
 		const eventObject = {
 			score: this.score,
-			coverage,
+			coverage: this.coverage,
+			timeRemaining: this.timeRemaining,
+			survivors: this.survivorCount,
+			overdriveCharge: this.overdriveCharge,
 			stopPropagation: () => {
 				continuePropagation = false
 			}
@@ -630,9 +686,14 @@ class GameState {
 	 * @public
 	 */
 	start() {
-		const millisecondInterval = 1 / this.refreshRate * 1000
+		const millisecondInterval = 1 / this.config.refreshRate * 1000
 
 		this.render()
+		this.handleEvent("score")
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
+		this.handleEvent("survivor")
+		this.handleEvent("overdrivecharge")
 
 		let lastTime = Date.now()
 		this.gameLoop = setInterval(() => {
@@ -640,7 +701,11 @@ class GameState {
 				lastTime = Date.now()
 				return
 			}
-			this.advanceTime(Date.now() - lastTime)
+			let interval = Date.now() - lastTime
+			if (this.overdriveActive) {
+				interval *= this.config.overdriveTemporalModifier
+			}
+			this.advanceTime(interval)
 			lastTime = Date.now()
 			this.render()
 		}, millisecondInterval)
@@ -668,9 +733,16 @@ class GameState {
 		this.timeOfLastProjectile = 0
 		this.paused = false
 		this.gameLoop = NaN
+		this.casualties = 0
+		this.newSurvivors = 0
+		this.bugsEradicated = false
+		this.overdriveCharge = 0
 
 		this.handleEvent("score")
-		this.handleEvent("health")
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
+		this.handleEvent("survivor")
+		this.handleEvent("overdrivecharge")
 
 		this.start()
 	}
@@ -685,6 +757,24 @@ class GameState {
 	}
 
 	/**
+	 * Eradicates all bugs via a nuclear blast. This will only be available if
+	 * the game's time limit is expired.
+	 * 
+	 * @public
+	 */
+	launchNuke() {
+		if (this.time < this.config.timeLimit) return
+		if (this.bugsEradicated) return
+
+		this.projectiles.push({
+			relativeAxis: transform([transpose(this.rotation)], [0, 0, 1]),
+			radialDistance: this.distance,
+			sizeFactor: 5,
+			isNuke: true
+		})
+	}
+
+	/**
 	 * Describes the current distance between the camera and the center of the
 	 * base sphere with a number from `0` to `1`, where `0` is maximally zoomed
 	 * out, and `1` is maximally zoomed in.
@@ -692,16 +782,18 @@ class GameState {
 	 * @public
 	 */
 	get zoom() {
-		return (this.distance - this.minDistance) / (this.maxDistance - this.minDistance)
+		const { minDistance, maxDistance } = this.config
+		return (this.distance - minDistance) / (maxDistance - minDistance)
 	}
 	/**
 	 * @public
 	 * @param newZoom
 	 */
 	set zoom(newZoom) {
+		const { minDistance, maxDistance } = this.config
 		if (newZoom > 1) newZoom = 1
 		if (newZoom < 0) newZoom = 0
-		this.distance = this.minDistance + newZoom * (this.maxDistance - this.minDistance)
+		this.distance = minDistance + newZoom * (maxDistance - minDistance)
 	}
 
 	/**
@@ -711,58 +803,74 @@ class GameState {
 	 * @public
 	 */
 	get dragSensitivity() {
-		return this.dragRotationSensitivity
+		return this.config.dragRotationSensitivity
 	}
 
 	get keySensitivity() {
-		return this.keyRotationRPM
+		return this.config.keyRotationRPM
 	}
-}
 
-/**
- * Determines whether or not a given bug is included in the projectile's
- * trajectory.
- *  
- * @param {Projectile} projectile
- * @param {Bug} bug
- * @returns {boolean} `true` if the bug is in the projectile's path, and
- * `false` otherwise.
- */
-function willCollide(projectile, bug) {
-	let projectileLocalCoordinates = transform(
-		[transpose(bug.rotationMatrix)], 
-		normalize(projectile.relativeAxis)
-	)
-	let projectileLocalPolarAngle = Math.acos(projectileLocalCoordinates[2])
-	if (projectileLocalPolarAngle > bug.arcLength) {
-		return false
+	/**
+	 * The calculated coverage of the sphere. I.e., the ratio of the total
+	 * surface area of the bugs to the surface area of the base sphere,  up
+	 * to a maximum of `1.0`.
+	 * 
+	 * @public
+	 */
+	get coverage() {
+		const totalBugArea = this.bugs
+		.map(({ arcLength }) => 
+			sphereSurfaceArea(arcLength, this.config.baseSphereRadius)
+		)
+		.reduce((a, b) => a + b, 0)
+		const baseSphereArea = 4 * Math.PI * Math.pow(this.config.baseSphereRadius, 2)
+		return Math.min(totalBugArea / baseSphereArea, 1)
 	}
-	return true
-}
+	
+	/**
+	 * The time remaining in the game, in milliseconds.
+	 * 
+	 * @public
+	 */
+	get timeRemaining() {
+		return Math.max(0, this.config.timeLimit - this.time)
+	}
 
-/**
- * Given a partial sphere (such as one of the bugs) that is defined by a
- * radial distance and a polar angle interval, this function calculates its
- * surface area (not volume).
- * 
- * @param {number} polarMax The interval of the polar angle is [0, `polarMax`].
- * angle.
- * @param {number} radialDistance The radial distance of the sphere.
- * @returns {number} The surface area of the partial sphere.
- */
-function sphereSurfaceArea(polarMax, radialDistance) {
-	/*
-	(I explain the formula below. The math terms are in LaTeX.)
+	/**
+	 * The number of remaining survivors.
+	 * 
+	 * @public
+	 */
+	get survivorCount() {
+		return this.config.initialSurvivorCount - this.casualties + this.newSurvivors
+	}
 
-	Recall that the differential surface area of a sphere is:
-	$dS = \rho^2 \sin\phi d\phi d\theta$, where $\rho$ is the radial distance,
-	$\phi$ is the polar angle, and $\theta$ is the azimuthal angle. We assume
-	that the azimuthal interval is $[0, 2 \pi]$ (the full interval), and so
-	we can integrate 
-	$\int_{0}^{2\pi}\int_{0}^{\phi_\text{max}}\rho^2\sin\phi d\phi d\theta$
-	which simplifies to
-	$2\pi\rho^2 (1 - \cos \phi_\text{max}).$
+	/**
+	 * Gets the difficulty modifier.
+	 * 
+	 * @private
+	 */
+	get difficultyModifier() {
+		return this.config.difficultyModifiers[this.difficulty]
+	}
 
-	*/ 
-	return 2 * Math.PI * Math.pow(radialDistance, 2) * (1 - Math.cos(polarMax))
+
+	/**
+	 * The game's difficulty setting.
+	 * 
+	 * @public
+	 * @type {GameDifficulty}
+	 */
+	get difficultySetting() {
+		return this.difficulty
+	}
+	/**
+	 * @public
+	 * @param {GameDifficulty} newDifficulty
+	 */
+	set difficultySetting(newDifficulty) {
+		this.difficulty = newDifficulty
+		this.restart()
+		this.pause()
+	}
 }

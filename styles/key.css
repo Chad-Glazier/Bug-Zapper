@@ -1,0 +1,57 @@
+.key {
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	padding: 3px;
+	text-transform: uppercase;
+	border: 1px white solid;
+	color: white;
+	border-radius: 3px;
+	font-size: 24px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	transition: all 400ms;
+	top: 0;
+	margin: 5px;
+}
+
+.key::after {
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	border-bottom: 1px white solid;
+	border-right: 1px white solid;
+	border-left: 1px white solid;
+	border-radius: 4px;
+	padding: 5px;
+	content: '';
+	bottom: -5px;
+}
+
+.key:hover {
+	cursor: pointer;
+	top: 2px;
+	color: var(--greeen);
+}
+
+.key.esc {
+	width: 50px;
+	margin-right: 50px;
+}
+.key.esc::after {
+	width: 50px;
+}
+
+.key.space {
+	width: 160px;
+}
+.key.space::after {
+	width: 160px;
+}
+
+.key.q:hover {
+	color: rgb(74, 216, 255);
+}

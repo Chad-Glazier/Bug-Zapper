@@ -1,0 +1,9 @@
+#score {
+	bottom: 1.5rem;
+	right: 15px;
+	display: none;
+}
+
+#score-display::before {
+	content: 'SCORE';
+}

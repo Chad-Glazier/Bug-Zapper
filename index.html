@@ -37,9 +37,9 @@
 	<script src="util/initShaderProgram.js"></script>
 	<script src="util/renderScene.js"></script>
 	<script src="util/rectangle.js"></script>
-	<script src="util/transform.js"></script>
-	<script src="util/GameState.js"></script>
+	<script src="util/gameState.js"></script>
 	<script src="util/ui.js"></script>
+	<script src="util/misc.js"></script>
 	<script src="constants.js"></script>
 
 	<!-- My HTML user interface (mostly menu stuff). -->
@@ -47,16 +47,64 @@
 		<button id="play-button">Play</button>
 		<button id="restart-button">Restart</button>
 		<button id="instructions-button">Instructions</button>
-		<div id="difficulty-carousel">
-			<button>
-				<img src="img/ui/left_arrow.png" class="arrowButton" id="decrease-difficulty-button">
-			</button>
-			difficulty here!
-			<button>
-				<img src="img/ui/right_arrow.png" class="arrowButton" id="increase-difficulty-button">
-			</button>
-		</div>
+		<button id="settings-button">Settings</button>
 	</menu>
+
+	<div id="settings">
+		<table>
+			<tr>
+				<td>Difficulty</td>
+				<td id="difficulty-carousel">
+					<img 
+						class="arrow-button left" 
+						style="transform: rotateZ(180deg)" 
+						id="decrease-difficulty-button" 
+						src="img/ui/right_arrow.png" 
+					/>
+					<div id="difficulty-text">
+						Normal
+					</div>
+					<img 
+						class="arrow-button right" 
+						id="increase-difficulty-button" 
+						src="img/ui/right_arrow.png" 
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td>Key Sensitivity</td>
+				<td>
+					<input
+						class="slider"
+						type="range"
+						id="key-sensitivity-range"
+						min="0.20"
+						max="2.50"
+						value="1.00"
+						step="0.01" 
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td>Mouse Sensitivity</td>
+				<td>
+					<input
+						class="slider"
+						type="range"
+						id="mouse-sensitivity-range"
+						min="0.20"
+						max="2.50"
+						value="1.00"
+						step="0.01" 
+					/>
+				</td>
+			</tr>
+		</table>
+
+		<button id="settings-return-button">
+			Return
+		</button>
+	</div>
 
 	<div id="instructions">
 		<div id="instructions-inner">
@@ -64,8 +112,9 @@
 			<p>
 				Your goal is to destroy any bug outbreaks until the planet is evacuated. The <strong>COVERAGE</strong>
 				represents the proportion of the planet that is currently controlled by the bugs. While more than
-				30% of the planet is covered, the remaining <strong>SURVIVORS</strong> will suffer casualties
-				at an increasing rate. Your objective is to minimize casualties.
+				20% of the planet is covered, the remaining <strong>SURVIVORS</strong> will suffer casualties
+				at an increasing rate. While below this threshold, more survivors can be found. Your objective is
+				to rescue as many survivors as possible.
 			</p>
 			<p>
 				Once the survivors have been evacuated, you will be free to purge the planet of any remaining
@@ -119,28 +168,43 @@
 							Fires the ship's cannon.
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<div class="key q">Q</div>
+						</td>
+						<td>
+							Activates overdrive if it's ready.
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
-		<button id="return-button">
+		<button id="instructions-return-button">
 			Return
 		</button>
 	</div>
 
-	<div id="score" class="textDisplay">
-		<span id="score-display">0</span>
+	<div id="score" class="text-display">
+		<span id="score-display"></span>
 	</div>
 
-	<div id="survivor-count" class="textDisplay">
-		<span id="survivor-display">0</span>
+	<div class="progress-bars">
+		<div class="progress-bar" id="overdrive-progress-bar">
+			<div class="progress-bar-inner"></div>
+			<span class="progress-bar-text" id="overdrive-text"></span>
+		</div>
+		<div class="progress-bar" id="survivor-progress-bar">
+			<div class="progress-bar-inner"></div>
+			<span class="progress-bar-text" id="survivor-display"></span>
+		</div>
 	</div>
 
-	<div id="coverage" class="textDisplay">
-		<span id="coverage-display">0%</span>
+	<div id="coverage" class="text-display">
+		<span id="coverage-display"></span>
 	</div>
 
-	<div id="time-remaining" class="textDisplay">
-		<span id="time-remaining-display">00:00</span>
+	<div id="time-remaining" class="text-display">
+		<span id="time-remaining-display"></span>
 	</div>
 
 	<img id="crosshairs" src="img/crosshairs.png" />

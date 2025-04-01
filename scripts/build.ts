@@ -1,7 +1,8 @@
 /**
  * This script, written for the Deno runtime, takes the `shaders/*.glsl` files
  * and bundles them into a single file, `shaders.js`, which declares a
- * constant for each of the files named based on the filename.
+ * constant for each of the files named based on the filename. It does the same
+ * for `styles/*.css` files and bundles them into `style.css`.
  * 
  * File names are converted to JavaScript constant identifies by converting all
  * characters to upper case, then adding the suffix `_SOURCE` in place of the
@@ -18,12 +19,20 @@
  * deno run --allow-read --allow-write ./scripts/build.ts
  * ```
  */
-async function build(directoryName: string, outputFile: string) {
+async function build(
+	shaderDirName: string, cssDirName: string, 
+	shaderOutput: string, cssOutput: string
+) {
+
+	//
+	// Shader code bundle
+	//
+
 	const sourceFiles: string[] = []
 	
-	for await (const file of Deno.readDir(directoryName)) {
+	for await (const file of Deno.readDir(shaderDirName)) {
 		if (file.isFile && file.name.endsWith(".glsl")) {
-			sourceFiles.push(`${directoryName}/${file.name}`)
+			sourceFiles.push(`${shaderDirName}/${file.name}`)
 		}
 	}
 
@@ -38,14 +47,10 @@ async function build(directoryName: string, outputFile: string) {
  * \`\`\`
  * 
  * All of the source code here corresponds to the files ending in \`.glsl\` that
- * were found in the \`./shaders\` directory.
+ * were found in the \`./${shaderDirName}\` directory.
  */
 
 `
-
-	// this will be used later
-	const shaders: Map<string, string> = new Map()
-
 	for (const filePath of sourceFiles) {
 		const shaderSourceCode = await Deno.readTextFile(filePath)
 		const pathParts = filePath.split("/")
@@ -54,60 +59,45 @@ async function build(directoryName: string, outputFile: string) {
 		const baseName = fileName.substring(0, fileName.length - 5)
 		const newName = baseName.toUpperCase() + "_SOURCE"
 
-		shaders.set(newName, shaderSourceCode)
-
 		outputString += `const ${newName} = \`${shaderSourceCode}\`\n`
 	}
 
 	const encoder = new TextEncoder()
-	Deno.writeFile(outputFile, encoder.encode(outputString))
+	Deno.writeFile(shaderOutput, encoder.encode(outputString))
 
-	// // parse the types.
-	// shaders.forEach((constantName, sourceCode) => {
-	// 	const lines = sourceCode.split("\n")
-		
-		
-	// 	for (const line of lines) {
-	// 		if (!line.startsWith("attribute") && !line.startsWith("uniform")) {
-	// 			continue
-	// 		}
+	//
+	// CSS bundle.
+	//
 
-	// 		if (line.startsWith("attribute")) {
+	const cssFiles = []
 
-	// 		}
+	for await (const file of Deno.readDir(cssDirName)) {
+		if (file.isFile && file.name.endsWith(".css")) {
+			cssFiles.push(`${cssDirName}/${file.name}`)
+		}
+	}
 
-	// 	}
-	// })
+	outputString = `/*
+	This file was created by running 
+
+	\`\`\`
+	deno --allow-read --allow-write ./scripts/build.ts
+	\`\`\`
+
+	All of the source code here corresponds to the files ending in \`.css\` that
+	were found in the \`./${cssDirName}\` directory.
+*/\n`
+
+	for (const filePath of cssFiles) {
+		const cssSourceCode = await Deno.readTextFile(filePath)
+		outputString += `\n/*\n\t${filePath}\n*/\n`
+		outputString += cssSourceCode + "\n"
+	}
+
+	const cssEncoder = new TextEncoder()
+	Deno.writeFile(cssOutput, cssEncoder.encode(outputString))
 }
 
-// function attribute
-
-// function uniformMat4Template(name: string): string {
-// 	return `
-// 	/** 
-// 	 * @param {[
-// 	 * 	[number, number, number, number],
-// 	 * 	[number, number, number, number],
-// 	 * 	[number, number, number, number],
-// 	 * 	[number, number, number, number],
-// 	 * ]} matrix the new matrix to assign to the uniform value.
-// 	set ${name}(matrix) {
-// 		if (this.program == null) {
-// 			${uncompiledProgramError("Could not assign uniform mat4 value")}
-// 			return
-// 		}
-// 		this.context.uniformMatrix4fv(
-// 			this.context.getUniformLocation(this.program, ${name}),
-// 			false,
-// 			flatten(matrix)
-// 		)
-// 	}
-// 	`
-// }
-
-// function uncompiledProgramError(message: string): string {
-// 	return `console.error(\`${message}: Program never compiled.\`)`
-// }
-
-build("shaders", "shaders.js")
-
+setInterval(() => {
+	build("shaders", "styles", "shaders.js", "style.css")
+}, 1000)

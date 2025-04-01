@@ -88,7 +88,7 @@ button:hover {
 */
 #instructions {
 	--info-panel-width: clamp(400px, 70%, 750px);
-	--info-panel-height: clamp(400px, 80%, 800px);
+	--info-panel-height: clamp(400px, 80%, 700px);
 	width: var(--info-panel-width);
 	height: var(--info-panel-height);
 	position: fixed;

@@ -6,7 +6,7 @@
 /// <reference path="./util/initShaderProgram.js" />
 /// <reference path="./util/renderScene.js" />
 /// <reference path="./constants.js" />
-/// <reference path="./util/gameState.js" />
+/// <reference path="./util/GameState.js" />
 /// <reference path="./util/ui.js" />
 
 function main() {

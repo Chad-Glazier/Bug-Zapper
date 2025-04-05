@@ -7,7 +7,7 @@
  * that refer to the vertex array and define triangles that cover the surface.
  * This only creates the surface of a sphere, so partial-spheres will look
  * hollow.
- * 
+ *
  * @param {number} divisions the number of vertices on each of the circles
  * formed.
  * @param {SphereOptions} options used for specifying how to draw an incomplete
@@ -17,15 +17,15 @@ function sphere(divisions, options = {
 	radialDistance: 1,
 	azimuthalInterval: [0, 2 * Math.PI],
 	polarInterval: [0, Math.PI],
-	scaleDivisions: true
+	scaleDivisions: true,
 }) {
 	// Set the defaults.
-	let { 
-		radialDistance, 
-		azimuthalInterval, 
-		polarInterval, 
-		scaleDivisions, 
-		isCone 
+	let {
+		radialDistance,
+		azimuthalInterval,
+		polarInterval,
+		scaleDivisions,
+		isCone,
 	} = options
 	radialDistance ??= 1
 	azimuthalInterval ??= [0, 2 * Math.PI]
@@ -34,7 +34,9 @@ function sphere(divisions, options = {
 	isCone ??= false
 
 	// clamp the intervals, we don't need to make unnecessary vertices.
-	let azimuthalIntervalWidth = Math.abs(azimuthalInterval[0] - azimuthalInterval[1])
+	let azimuthalIntervalWidth = Math.abs(
+		azimuthalInterval[0] - azimuthalInterval[1],
+	)
 	if (azimuthalIntervalWidth > 2 * Math.PI) {
 		azimuthalInterval = [0, 2 * Math.PI]
 		azimuthalIntervalWidth = 2 * Math.PI
@@ -61,10 +63,10 @@ function sphere(divisions, options = {
 	// scale the divisions, if preferred.
 	if (scaleDivisions) {
 		azimuthalDivisions = Math.round(
-			divisions * azimuthalIntervalWidth / (2 * Math.PI)
+			divisions * azimuthalIntervalWidth / (2 * Math.PI),
 		)
 		polarDivisions = Math.round(
-			divisions * polarIntervalWidth / Math.PI
+			divisions * polarIntervalWidth / Math.PI,
 		)
 	}
 
@@ -72,7 +74,7 @@ function sphere(divisions, options = {
 	const azimuthalStep = azimuthalIntervalWidth / azimuthalDivisions
 	const [polarStart, polarEnd] = polarInterval
 	const polarStep = polarIntervalWidth / polarDivisions
-	
+
 	// First, we'll draw a circle of the specified radius around the origin,
 	// flat on the xy plane (ignoring the z axis). We are only drawing one
 	// circle here.
@@ -88,7 +90,7 @@ function sphere(divisions, options = {
 		points.push([
 			radialDistance * Math.cos(azimuthalAngle), // x
 			radialDistance * Math.sin(azimuthalAngle), // y
-			0 // z, we're not dealing with this yet.
+			0, // z, we're not dealing with this yet.
 		])
 	}
 
@@ -104,13 +106,13 @@ function sphere(divisions, options = {
 	points = points.map(([x, y, z], idx) => {
 		// Each circle has a uniform polar angle. For example, if we have 12
 		// azimuthal divisions, then the first 12 points describe the "top"-
-		// most circle, where the polar angle is `polarStart`. The next 12 
-		// points refer to the next-highest circle, where the polar angle is 
+		// most circle, where the polar angle is `polarStart`. The next 12
+		// points refer to the next-highest circle, where the polar angle is
 		// `polarStart + polarStep`.
 		//
-		// Note that we also add the `+ 1` in the division since there are 
+		// Note that we also add the `+ 1` in the division since there are
 		// actually `azimuthalDivisions + 1` circles, as we noted before.
-		const polarAngle = polarStart + 
+		const polarAngle = polarStart +
 			Math.floor(idx / (azimuthalDivisions + 1)) * polarStep
 		// The projection of the radial arm onto the xy plane, where we drew
 		// our circles, is not `radialDistance`, but rather `radialDistance *
@@ -134,13 +136,17 @@ function sphere(divisions, options = {
 	// 	the point below it should be at `i + azimuthalDivisions` since each
 	// 	circle is made up of `azimuthalDivisions` points.
 	// - Each point has a point to it's "right," on the same circle. If we're
-	// 	considering the `i`-th point, the point to the right should be at 
+	// 	considering the `i`-th point, the point to the right should be at
 	// 	`i + 1`.
 	/**
 	 * @type {Array<[number, number, number]>}
 	 */
 	let triangles = []
-	for (let vertexIndex = 0; vertexIndex < points.length - azimuthalDivisions; vertexIndex++) {
+	for (
+		let vertexIndex = 0;
+		vertexIndex < points.length - azimuthalDivisions;
+		vertexIndex++
+	) {
 		// Below, we describe the the corners of a panel.
 		let topLeftCorner = vertexIndex
 		let topRightCorner = vertexIndex + 1
@@ -153,16 +159,20 @@ function sphere(divisions, options = {
 		// We divide the panel into two triangles and add them to the list.
 		triangles.push(
 			[topLeftCorner, topRightCorner, bottomLeftCorner],
-			[bottomLeftCorner, bottomRightCorner, topRightCorner]
+			[bottomLeftCorner, bottomRightCorner, topRightCorner],
 		)
 	}
-	
+
 	if (isCone) {
 		points.push([0, 0, 0])
 		const originIdx = points.length - 1
 
 		// start a loop from where we left off
-		for (let vertexIndex = points.length - azimuthalDivisions - 1; vertexIndex < points.length - 1; vertexIndex++) {
+		for (
+			let vertexIndex = points.length - azimuthalDivisions - 1;
+			vertexIndex < points.length - 1;
+			vertexIndex++
+		) {
 			triangles.push([vertexIndex, vertexIndex + 1, originIdx])
 		}
 	}
@@ -170,6 +180,6 @@ function sphere(divisions, options = {
 	// Finally, we have flatten the arrays and return them.
 	return {
 		vertices: new Float32Array(points.flat()),
-		indices: new Uint16Array(triangles.flat())
+		indices: new Uint16Array(triangles.flat()),
 	}
 }

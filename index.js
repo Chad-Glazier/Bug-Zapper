@@ -10,12 +10,11 @@
 /// <reference path="./util/ui.js" />
 
 function main() {
-	
 	//
 	// Set up the rendering context.
 	//
 
-	const canvas = document.getElementById(CANVAS_ID);
+	const canvas = document.getElementById(CANVAS_ID)
 	if (canvas == null) {
 		console.error(`\`<canvas id="${CANVAS_ID}">\` element missing.`)
 		return
@@ -44,14 +43,14 @@ function main() {
 		POINTS_FSHADER_SOURCE,
 	)
 	const sphereShaderProgram = initShaderProgram(
-		gl, 
-		SPHERE_VSHADER_SOURCE, 
-		SPHERE_FSHADER_SOURCE
+		gl,
+		SPHERE_VSHADER_SOURCE,
+		SPHERE_FSHADER_SOURCE,
 	)
 	const rectangleShaderProgram = initShaderProgram(
 		gl,
 		RECTANGLE_VSHADER_SOURCE,
-		RECTANGLE_FSHADER_SOURCE
+		RECTANGLE_FSHADER_SOURCE,
 	)
 
 	if (pointShaderProgram == null) return
@@ -72,10 +71,18 @@ function main() {
 	const playButton = document.getElementById("play-button")
 	const restartButton = document.getElementById("restart-button")
 	const instructionsButton = document.getElementById("instructions-button")
-	const instructionsReturnButton = document.getElementById("instructions-return-button")
-	const settingsReturnButton = document.getElementById("settings-return-button")
-	const increaseDifficultyButton = document.getElementById("increase-difficulty-button")
-	const decreaseDifficultyButton = document.getElementById("decrease-difficulty-button")
+	const instructionsReturnButton = document.getElementById(
+		"instructions-return-button",
+	)
+	const settingsReturnButton = document.getElementById(
+		"settings-return-button",
+	)
+	const increaseDifficultyButton = document.getElementById(
+		"increase-difficulty-button",
+	)
+	const decreaseDifficultyButton = document.getElementById(
+		"decrease-difficulty-button",
+	)
 	const settingsButton = document.getElementById("settings-button")
 	// text displays
 	const scoreDisplay = document.getElementById("score-display")
@@ -90,35 +97,41 @@ function main() {
 	const overdriveBar = document.getElementById("overdrive-progress-bar")
 	const heatBar = document.getElementById("heat-progress-bar")
 	// slider inputs
-	const mouseSensitivitySlider = document.getElementById("mouse-sensitivity-range")
-	const keySensitivitySlider = document.getElementById("key-sensitivity-range")
+	const mouseSensitivitySlider = document.getElementById(
+		"mouse-sensitivity-range",
+	)
+	const keySensitivitySlider = document.getElementById(
+		"key-sensitivity-range",
+	)
 
 	if (
-		pauseMenu == null 
-		|| instructions == null 
-		|| playButton == null 
-		|| restartButton == null 
-		|| increaseDifficultyButton == null 
-		|| decreaseDifficultyButton == null 
-		|| scoreDisplay == null 
-		|| instructionsButton == null 
-		|| instructionsReturnButton == null 
-		|| survivorDisplay == null 
-		|| coverageDisplay == null 
-		|| timeRemaining == null 
-		|| survivorBar == null 
-		|| overdriveBar == null 
-		|| settingsReturnButton == null 
-		|| settingsButton == null 
-		|| settingsMenu == null 
-		|| difficultyText == null 
-		|| overdriveText == null
-		|| keySensitivitySlider == null 
-		|| mouseSensitivitySlider == null
-		|| heatBar == null
-		|| heatText == null
+		pauseMenu == null ||
+		instructions == null ||
+		playButton == null ||
+		restartButton == null ||
+		increaseDifficultyButton == null ||
+		decreaseDifficultyButton == null ||
+		scoreDisplay == null ||
+		instructionsButton == null ||
+		instructionsReturnButton == null ||
+		survivorDisplay == null ||
+		coverageDisplay == null ||
+		timeRemaining == null ||
+		survivorBar == null ||
+		overdriveBar == null ||
+		settingsReturnButton == null ||
+		settingsButton == null ||
+		settingsMenu == null ||
+		difficultyText == null ||
+		overdriveText == null ||
+		keySensitivitySlider == null ||
+		mouseSensitivitySlider == null ||
+		heatBar == null ||
+		heatText == null
 	) {
-		console.error(`One or more necessary elements were not found when setting up the UI.`)
+		console.error(
+			`One or more necessary elements were not found when setting up the UI.`,
+		)
 		return
 	}
 
@@ -127,10 +140,10 @@ function main() {
 		{
 			menu: {
 				pause: pauseMenu,
-				settings: settingsMenu
+				settings: settingsMenu,
 			},
 			informationCard: {
-				instructions: instructions
+				instructions: instructions,
 			},
 			button: {
 				play: playButton,
@@ -140,7 +153,7 @@ function main() {
 				instructions: instructionsButton,
 				instructionsReturn: instructionsReturnButton,
 				settingsReturn: settingsReturnButton,
-				settings: settingsButton
+				settings: settingsButton,
 			},
 			textDisplay: {
 				score: scoreDisplay,
@@ -149,44 +162,44 @@ function main() {
 				timeRemaining: timeRemaining,
 				difficulty: difficultyText,
 				overdrive: overdriveText,
-				heat: heatText
+				heat: heatText,
 			},
-			progressBar: { 
+			progressBar: {
 				survivor: survivorBar,
 				overdrive: overdriveBar,
-				heat: heatBar
+				heat: heatBar,
 			},
 			input: {
 				mouseSensitivity: mouseSensitivitySlider,
-				keySensitivity: keySensitivitySlider
-			}
+				keySensitivity: keySensitivitySlider,
+			},
 		},
 		{
 			pauseMenu: {
 				hidden: [
-					["top", "calc(100vh + 50px)"]
+					["top", "calc(100vh + 50px)"],
 				],
 				shown: [
-					["top", "calc(50vh - var(--menu-height) / 2)"]
-				]			
+					["top", "calc(50vh - var(--menu-height) / 2)"],
+				],
 			},
 			infoPanel: {
 				hidden: [
-					["top", "calc(100vh + 50px)"]
+					["top", "calc(100vh + 50px)"],
 				],
 				shown: [
-					["top", "calc(50vh - var(--info-panel-height) / 2)"]
-				]
+					["top", "calc(50vh - var(--info-panel-height) / 2)"],
+				],
 			},
 			settings: {
 				hidden: [
-					["top", "calc(100vh + 50px)"]
+					["top", "calc(100vh + 50px)"],
 				],
 				shown: [
-					["top", "calc(50vh - var(--settings-height) / 2)"]
-				]
-			}
-		}
+					["top", "calc(50vh - var(--settings-height) / 2)"],
+				],
+			},
+		},
 	)
 
 	//
@@ -195,20 +208,20 @@ function main() {
 
 	/** @type {GameOptions} */
 	const defaultOptions = {
-		overdriveDuration: 6 * 1000,	// overdrive lasts 6 seconds.
-		overdriveTemporalModifier: 0.05,// time moves at 5% during overdrive.
-		overdriveCooldown: 30 * 1000, 	// 30 seconds.
-		timeLimit: 2 * 60 * 1000,  		// 2 minutes, in milliseconds.
-		casualtiesThreshold: 0.20, 		// Casualties are incurred beyond 20% coverage.
-		initialSurvivorCount: 10000, 	// 10K initial survivors.
+		overdriveDuration: 6 * 1000, // overdrive lasts 6 seconds.
+		overdriveTemporalModifier: 0.05, // time moves at 5% during overdrive.
+		overdriveCooldown: 30 * 1000, // 30 seconds.
+		timeLimit: 2 * 60 * 1000, // 2 minutes, in milliseconds.
+		casualtiesThreshold: 0.20, // Casualties are incurred beyond 20% coverage.
+		initialSurvivorCount: 10000, // 10K initial survivors.
 		baseSphereRadius: 1,
 		startingDistance: 5,
 		maxDistance: 10,
 		minDistance: 3,
 		refreshRate: 60,
 		frictionCoefficient: 0.35,
-		heatPerShot: 0.05,
-		coolingRate: 0.15,
+		heatPerShot: 0.075,
+		coolingRate: 0.20,
 		projectileSpeed: 15,
 		bugGrowthRate: Math.PI / 72,
 		bugDeathRate: Math.PI / 2,
@@ -216,12 +229,12 @@ function main() {
 			missedShot: -100,
 			landedShot: 100,
 			perSecond: 5,
-			onWin: 1000
+			onWin: 1000,
 		},
 		bugElevationGap: 0.0032,
 		enableInertia: true,
 		bugSpawnFrequency: 0.65,
-		cannonCooldown: 0.10,
+		cannonCooldown: 0.20,
 		dragRotationSensitivity: 1.0,
 		keyRotationRPM: 20,
 		bugCapacity: 8,
@@ -229,15 +242,15 @@ function main() {
 			easy: 1,
 			normal: 2,
 			hard: 3,
-			apocalypse: 4
+			apocalypse: 4,
 		},
-		dyingBugColor: [0.78, 0.24, 0.24, 1.0]
+		dyingBugColor: [0.78, 0.24, 0.24, 1.0],
 	}
 
 	const shaders = {
 		point: pointShaderProgram,
 		sphere: sphereShaderProgram,
-		rectangle: rectangleShaderProgram
+		rectangle: rectangleShaderProgram,
 	}
 
 	let game = new GameState(gl, shaders, defaultOptions)
@@ -252,7 +265,10 @@ function main() {
 		ui.survivorCountProgress = survivors / game.config.initialSurvivorCount
 		ui.survivorCountNumber = survivors
 	})
-	game.on("timeremaining", ({ timeRemaining }) => ui.timeRemaining = timeRemaining)
+	game.on(
+		"timeremaining",
+		({ timeRemaining }) => ui.timeRemaining = timeRemaining,
+	)
 	game.on("overdrivecharge", ({ overdriveCharge }) => {
 		ui.overdriveChargeProgress = overdriveCharge
 	})
@@ -281,7 +297,7 @@ function main() {
 			ui.hideInstructions(() => game.unpause())
 			return
 		}
-		
+
 		if (ui.settingsVisible) {
 			ui.hideSettings(() => game.unpause())
 			return
@@ -339,7 +355,7 @@ function main() {
 		mousePosition = [clientX, clientY]
 	})
 
-	let  firingInterval = NaN
+	let firingInterval = NaN
 
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key !== " ") return
@@ -350,12 +366,12 @@ function main() {
 		if (!Number.isNaN(firingInterval)) return
 
 		game.launchProjectile(
-			game.projectGameCoordinates(mousePosition)
+			game.projectGameCoordinates(mousePosition),
 		)
 
 		firingInterval = setInterval(() => {
 			game.launchProjectile(
-				game.projectGameCoordinates(mousePosition)
+				game.projectGameCoordinates(mousePosition),
 			)
 		}, game.config.cannonCooldown)
 	})
@@ -365,7 +381,7 @@ function main() {
 
 		clearInterval(firingInterval)
 		firingInterval = NaN
- 	})
+	})
 
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key !== "f") return
@@ -375,59 +391,66 @@ function main() {
 
 	ui.element.button.decreaseDifficulty.addEventListener("click", () => {
 		switch (game.difficultySetting) {
-		case "easy":
-			return
-		case "normal":
-			ui.difficulty = "easy"
-			game.difficultySetting = "easy"
-			break
-		case "hard": 
-			ui.difficulty = "normal"
-			game.difficultySetting = "normal"
-			break
-		case "apocalypse": 
-			ui.difficulty = "hard"
-			game.difficultySetting = "hard"
-			break
+			case "easy":
+				return
+			case "normal":
+				ui.difficulty = "easy"
+				game.difficultySetting = "easy"
+				break
+			case "hard":
+				ui.difficulty = "normal"
+				game.difficultySetting = "normal"
+				break
+			case "apocalypse":
+				ui.difficulty = "hard"
+				game.difficultySetting = "hard"
+				break
 		}
 	})
 
 	ui.element.button.increaseDifficulty.addEventListener("click", () => {
 		switch (game.difficultySetting) {
-		case "easy":
-			ui.difficulty = "normal"
-			game.difficultySetting = "normal"
-			break
-		case "normal":
-			ui.difficulty = "hard"
-			game.difficultySetting = "hard"
-			break
-		case "hard": 
-			ui.difficulty = "apocalypse"
-			game.difficultySetting = "apocalypse"
-			break
-		case "apocalypse": 
-			return
+			case "easy":
+				ui.difficulty = "normal"
+				game.difficultySetting = "normal"
+				break
+			case "normal":
+				ui.difficulty = "hard"
+				game.difficultySetting = "hard"
+				break
+			case "hard":
+				ui.difficulty = "apocalypse"
+				game.difficultySetting = "apocalypse"
+				break
+			case "apocalypse":
+				return
 		}
 	})
 
 	ui.element.input.keySensitivity.addEventListener("input", (ev) => {
-		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) return
-		
-		game.keySensitivityMultiplier = parseFloat(ui.element.input.keySensitivity.value)
+		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) {
+			return
+		}
+
+		game.keySensitivityMultiplier = parseFloat(
+			ui.element.input.keySensitivity.value,
+		)
 	})
 
 	ui.element.input.mouseSensitivity.addEventListener("input", (ev) => {
-		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) return
-		
-		game.mouseSensitivityMultiplier = parseFloat(ui.element.input.keySensitivity.value)
-	})
+		if (!(ui.element.input.keySensitivity instanceof HTMLInputElement)) {
+			return
+		}
 
+		game.mouseSensitivityMultiplier = parseFloat(
+			ui.element.input.keySensitivity.value,
+		)
+	})
 
 	//
 	// Start the game
 	//
-	
+
 	game.start()
 	game.pause()
 	ui.showPauseMenu()
@@ -435,7 +458,7 @@ function main() {
 
 /**
  * Set up the dragging functionality for sphere.
- * 
+ *
  * @param {GameState} game
  */
 function enableMouseDrag(game) {
@@ -459,7 +482,7 @@ function enableMouseDrag(game) {
 
 		game.setMomentum([0, 0, 1], 0)
 	})
-	
+
 	canvas.addEventListener("mousemove", ({ movementX, movementY }) => {
 		if (game.isPaused) return
 		if (!dragging) return
@@ -470,14 +493,15 @@ function enableMouseDrag(game) {
 		const [initialX, initialY] = initialPosition
 		const [deltaX, deltaY] = [
 			movementX,
-			-1 * movementY
+			-1 * movementY,
 		]
 		const magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 		if (magnitude === 0) return
 
 		// By default, there is one half of a rotation per length of the canvas
 		// dragged. The sensitivity setting is also factored in.
-		const rotations = game.dragSensitivity * magnitude / (2 * canvasLength) * game.mouseSensitivityMultiplier
+		const rotations = game.dragSensitivity * magnitude /
+			(2 * canvasLength) * game.mouseSensitivityMultiplier
 
 		// The axis of rotation ought to be orthogonal to the displacement
 		// of the mouse in order to feel natural. It's magnitude is irrelevant.
@@ -515,27 +539,27 @@ function enableMouseDrag(game) {
 /**
  * Sets the event listeners necessary to allow the user to rotate the sphere
  * with arrow keys / WASD.
- * 
- * @param {GameState} game 
+ *
+ * @param {GameState} game
  */
 function enableKeyRotationControls(game) {
 	const keyControls = [
 		{
 			keys: ["ArrowRight", "d"],
-			dir: "right"
+			dir: "right",
 		},
 		{
 			keys: ["ArrowLeft", "a"],
-			dir: "left"
+			dir: "left",
 		},
 		{
 			keys: ["ArrowDown", "s"],
-			dir: "down"
+			dir: "down",
 		},
 		{
 			keys: ["ArrowUp", "w"],
-			dir: "up"
-		}
+			dir: "up",
+		},
 	]
 
 	const activeKeyRotationEvents = new Set()
@@ -567,14 +591,16 @@ function enableKeyRotationControls(game) {
 			game.setMomentum([0, 0, 1], 0)
 			game.setInertia(originalMomentum.axis, originalMomentum.rpm)
 		} else {
-			game.setMomentum([x, y, 0], game.config.keyRotationRPM * game.keySensitivityMultiplier)
+			game.setMomentum(
+				[x, y, 0],
+				game.config.keyRotationRPM * game.keySensitivityMultiplier,
+			)
 		}
 	}
 
 	window.addEventListener("keydown", ({ key }) => {
 		if (game.isPaused) return
 		if (activeKeyRotationEvents.has(key)) {
-			
 			return
 		}
 
@@ -585,13 +611,13 @@ function enableKeyRotationControls(game) {
 				continue
 			}
 
-			keys.forEach(k => activeKeyRotationEvents.add(k))
+			keys.forEach((k) => activeKeyRotationEvents.add(k))
 			direction[dir] = true
 			updateMomentum()
 		}
 	})
 
-	window.addEventListener("keyup",  ({ key }) => {
+	window.addEventListener("keyup", ({ key }) => {
 		if (!activeKeyRotationEvents.has(key)) return
 
 		for (const { keys, dir } of keyControls) {
@@ -599,7 +625,7 @@ function enableKeyRotationControls(game) {
 				continue
 			}
 
-			keys.forEach(k => activeKeyRotationEvents.delete(k))
+			keys.forEach((k) => activeKeyRotationEvents.delete(k))
 			direction[dir] = false
 			updateMomentum()
 		}

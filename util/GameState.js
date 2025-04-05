@@ -36,13 +36,13 @@ class GameState {
 					radialDistance: options.baseSphereRadius,
 				},
 			),
-		};
+		}
 
 		this.overheated = false
 
 		/**
 		 * A number from `0` to `1` representing the heat of the cannon.
-		 * 
+		 *
 		 * @private
 		 */
 		this.currentHeat = 0
@@ -53,7 +53,7 @@ class GameState {
 		 * @private
 		 * @type {Bug[]}
 		 */
-		this.bugs = [];
+		this.bugs = []
 
 		/**
 		 * The (dying) bugs in the game.
@@ -61,7 +61,7 @@ class GameState {
 		 * @private
 		 * @type {DyingBug[]}
 		 */
-		this.dyingBugs = [];
+		this.dyingBugs = []
 
 		/**
 		 * The projectiles in the game.
@@ -69,7 +69,7 @@ class GameState {
 		 * @private
 		 * @type {Projectile[]}
 		 */
-		this.projectiles = [];
+		this.projectiles = []
 
 		/**
 		 * The base sphere for the game. This is the sphere at the "center"
@@ -86,9 +86,9 @@ class GameState {
 		 * @private
 		 * @type {number[][]}
 		 */
-		this.rotation = mat4();
-		this.rotation = mult(rotate(90, [1, 0, 0]), this.rotation);
-		this.rotation = mult(rotate(23.45, [0, 0, 1]), this.rotation);
+		this.rotation = mat4()
+		this.rotation = mult(rotate(90, [1, 0, 0]), this.rotation)
+		this.rotation = mult(rotate(23.45, [0, 0, 1]), this.rotation)
 
 		/**
 		 * The distance between the camera and the center of the base sphere.
@@ -96,7 +96,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.distance = options.startingDistance;
+		this.distance = options.startingDistance
 
 		/**
 		 * Stores the game time in milliseconds.
@@ -104,7 +104,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.time = 0;
+		this.time = 0
 
 		/**
 		 * Stores the rotational momentum of the sphere. Note that momentum
@@ -114,7 +114,7 @@ class GameState {
 		 * @private
 		 * @type {{ axis: number[], rpm: number }}
 		 */
-		this.momentum = { axis: [0, 0, 1], rpm: 0 };
+		this.momentum = { axis: [0, 0, 1], rpm: 0 }
 
 		/**
 		 * Stores the rotational inertia of the sphere. Note that the inertia
@@ -133,7 +133,7 @@ class GameState {
 		 * @private
 		 * @type {{ axis: number[], rpm: number }}
 		 */
-		this.inertia = { axis: [0, 0, 1], rpm: 0 };
+		this.inertia = { axis: [0, 0, 1], rpm: 0 }
 
 		/**
 		 * Stores the current game score.
@@ -141,7 +141,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.score = 0;
+		this.score = 0
 
 		/**
 		 * Stores the (game) time when the last bug was spawned.
@@ -149,7 +149,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.timeOfLastBug = 0;
+		this.timeOfLastBug = 0
 
 		/**
 		 * Stores the `time` at which the most recent cannon shot was fired.
@@ -157,7 +157,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.timeOfLastProjectile = 0;
+		this.timeOfLastProjectile = 0
 
 		/**
 		 * Marks whether or not time should pass in the game.
@@ -165,7 +165,7 @@ class GameState {
 		 * @private
 		 * @type {boolean}
 		 */
-		this.paused = false;
+		this.paused = false
 
 		/**
 		 * Maps game events like `"pause"`, `"unpause"`, and `"score"` to their
@@ -174,7 +174,7 @@ class GameState {
 		 * @private
 		 * @type {Map<string, Array<(event: GameEvent) => void>>}
 		 */
-		this.listeners = new Map();
+		this.listeners = new Map()
 
 		/**
 		 * Stores the ID of the main game loop, which is a `setInterval`
@@ -184,7 +184,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.gameLoop = NaN;
+		this.gameLoop = NaN
 
 		/**
 		 * The number of survivors lost to the bugs.
@@ -192,7 +192,7 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.casualties = 0;
+		this.casualties = 0
 
 		/**
 		 * The number of additional survivors discovered.
@@ -200,13 +200,13 @@ class GameState {
 		 * @private
 		 * @type {number}
 		 */
-		this.newSurvivors = 0;
+		this.newSurvivors = 0
 
 		/**
 		 * Indicates that the bugs have been fully eradicated. No new bugs
 		 * should spawn until a new game is started.
 		 */
-		this.bugsEradicated = false;
+		this.bugsEradicated = false
 
 		/**
 		 * Determines the game difficulty
@@ -214,7 +214,7 @@ class GameState {
 		 * @private
 		 * @type {GameDifficulty}
 		 */
-		this.difficulty = "normal";
+		this.difficulty = "normal"
 
 		/**
 		 * A number from `0` to `1` representing the charge of the overdrive
@@ -222,24 +222,24 @@ class GameState {
 		 *
 		 * @type {number}
 		 */
-		this.overdriveCharge = 0;
+		this.overdriveCharge = 0
 
 		/**
 		 * A boolean flag marking whether or not the overdrive ability is
 		 * active.
 		 */
-		this.overdriveActive = false;
+		this.overdriveActive = false
 
-		this.mouseSensitivityMultiplier = 1.0;
-		this.keySensitivityMultiplier = 1.0;
+		this.mouseSensitivityMultiplier = 1.0
+		this.keySensitivityMultiplier = 1.0
 
-		let canvasWidth, canvasHeight;
+		let canvasWidth, canvasHeight
 		if (this.config.renderingContext.canvas instanceof OffscreenCanvas) {
-			canvasWidth = 100;
-			canvasHeight = 100;
+			canvasWidth = 100
+			canvasHeight = 100
 		} else {
-			canvasWidth = this.config.renderingContext.canvas.clientWidth;
-			canvasHeight = this.config.renderingContext.canvas.clientHeight;
+			canvasWidth = this.config.renderingContext.canvas.clientWidth
+			canvasHeight = this.config.renderingContext.canvas.clientHeight
 		}
 
 		/**
@@ -253,7 +253,7 @@ class GameState {
 			canvasWidth / canvasHeight, // aspect ratio
 			0.1, // the distance to the near clipping plane
 			100, // the distance to the far clipping plane
-		);
+		)
 
 		/**
 		 * The inverse of the projection matrix used.
@@ -266,7 +266,7 @@ class GameState {
 			canvasWidth / canvasHeight,
 			0.1,
 			100,
-		);
+		)
 	}
 
 	/**
@@ -280,15 +280,15 @@ class GameState {
 			1 - this.coverage,
 			0,
 			1,
-		];
-		let sphereColor = [0.2 * this.coverage, 0, 0, 1];
+		]
+		let sphereColor = [0.2 * this.coverage, 0, 0, 1]
 		if (this.overdriveActive) {
-			spherePointColor = OVERDRIVE_BLUE;
-			sphereColor = OVERDRIVE_BLUE.map((x) => x * 0.2);
-			sphereColor[3] = 1;
+			spherePointColor = OVERDRIVE_BLUE
+			sphereColor = OVERDRIVE_BLUE.map((x) => x * 0.2)
+			sphereColor[3] = 1
 		}
 		if (this.bugsEradicated) {
-			spherePointColor = [0, 1, 0, 1];
+			spherePointColor = [0, 1, 0, 1]
 		}
 
 		renderScene(
@@ -307,7 +307,7 @@ class GameState {
 				spherePointColor: spherePointColor,
 				sphereColor: sphereColor,
 			},
-		);
+		)
 	}
 
 	/**
@@ -321,15 +321,15 @@ class GameState {
 	 * mapped onto the `z = 0` plane.
 	 */
 	projectGameCoordinates([x, y]) {
-		const canvas = this.config.renderingContext.canvas;
+		const canvas = this.config.renderingContext.canvas
 
-		let maxX, maxY;
+		let maxX, maxY
 		if (canvas instanceof OffscreenCanvas) {
-			maxX = canvas.width;
-			maxY = canvas.height;
+			maxX = canvas.width
+			maxY = canvas.height
 		} else {
-			maxX = canvas.clientWidth;
-			maxY = canvas.clientHeight;
+			maxX = canvas.clientWidth
+			maxY = canvas.clientHeight
 		}
 
 		const normalizedDeviceCoordinates = [
@@ -337,19 +337,19 @@ class GameState {
 			y / maxY * -2 + 1,
 			-1,
 			0,
-		];
+		]
 
 		const projectedPosition = transform([
 			this.inverseProjectionMatrix,
-		], normalizedDeviceCoordinates);
+		], normalizedDeviceCoordinates)
 
-		const scalingFactor = this.distance;
+		const scalingFactor = this.distance
 
 		return [
 			projectedPosition[0] * scalingFactor,
 			projectedPosition[1] * scalingFactor,
 			0,
-		];
+		]
 	}
 
 	/**
@@ -381,15 +381,15 @@ class GameState {
 			overdriveTemporalModifier,
 			overdriveCooldown,
 			overdriveDuration,
-		} = this.config;
+		} = this.config
 
-		this.time = Math.min(this.time + milliseconds, this.config.timeLimit);
-		const seconds = milliseconds / 1000;
-		const minutes = seconds / 60;
-		const originalScore = this.score;
-		const originalSurvivorCount = this.survivorCount;
-		const originalCoverage = this.coverage;
-		const originalOverdriveCharge = this.overdriveCharge;
+		this.time = Math.min(this.time + milliseconds, this.config.timeLimit)
+		const seconds = milliseconds / 1000
+		const minutes = seconds / 60
+		const originalScore = this.score
+		const originalSurvivorCount = this.survivorCount
+		const originalCoverage = this.coverage
+		const originalOverdriveCharge = this.overdriveCharge
 		const originalHeat = this.currentHeat
 
 		// Get the "real" time, without the overdrive modifier. This is so that
@@ -399,17 +399,17 @@ class GameState {
 			milliseconds,
 			seconds,
 			minutes,
-		};
+		}
 		if (this.overdriveActive) {
 			for (const unit in real) {
-				real[unit] /= overdriveTemporalModifier;
+				real[unit] /= overdriveTemporalModifier
 			}
 		}
 
 		// Decrease the heat.
 		this.currentHeat = Math.max(
 			this.currentHeat - this.config.coolingRate * seconds,
-			0
+			0,
 		)
 		if (this.overheated && this.currentHeat == 0) {
 			this.overheated = false
@@ -417,34 +417,34 @@ class GameState {
 
 		// Progress the overdrive cooldown.
 		if (!this.overdriveActive) {
-			this.overdriveCharge += milliseconds / overdriveCooldown;
-			this.overdriveCharge = Math.min(1, this.overdriveCharge);
+			this.overdriveCharge += milliseconds / overdriveCooldown
+			this.overdriveCharge = Math.min(1, this.overdriveCharge)
 		} else {
-			this.overdriveCharge -= real.milliseconds / overdriveDuration;
-			this.overdriveCharge = Math.max(0, this.overdriveCharge);
+			this.overdriveCharge -= real.milliseconds / overdriveDuration
+			this.overdriveCharge = Math.max(0, this.overdriveCharge)
 		}
 
 		// Handle overdrive ending
 		if (this.overdriveCharge == 0) {
-			this.overdriveActive = false;
-			this.handleEvent("deactivateoverdrive");
+			this.overdriveActive = false
+			this.handleEvent("deactivateoverdrive")
 		}
 
 		// This produces a modifier for the bug spawn frequency and growth rate
 		// based on the temporal progress and difficulty setting.
-		const timeFactor = this.time / this.config.timeLimit;
-		const difficultyFactor = this.difficultyModifier;
+		const timeFactor = this.time / this.config.timeLimit
+		const difficultyFactor = this.difficultyModifier
 		const bugGrowthRateModifier = Math.min(
 			1.5,
 			1 + timeFactor * difficultyFactor,
-		);
-		const bugSpawnFrequencyModifier = 1 + timeFactor * difficultyFactor;
-		const bugCapacityModifier = 1 + timeFactor * difficultyFactor;
-		const casualtiesModifier = 1 + timeFactor * difficultyFactor * 2;
+		)
+		const bugSpawnFrequencyModifier = 1 + timeFactor * difficultyFactor
+		const bugCapacityModifier = 1 + timeFactor * difficultyFactor
+		const casualtiesModifier = 1 + timeFactor * difficultyFactor * 2
 
 		// Increment score if the game is still going
 		if (this.time < timeLimit) {
-			this.score += scoreSettings.perSecond * seconds;
+			this.score += scoreSettings.perSecond * seconds
 		}
 
 		// Calculate casualties / newly discovered survivors. Do not change
@@ -460,15 +460,18 @@ class GameState {
 						seconds *
 						casualtiesModifier,
 					this.survivorCount,
-				);
+				)
 			} else {
 				this.newSurvivors += (0.002 * this.survivorCount) *
-					(casualtiesThreshold - originalCoverage) * seconds;
+					(casualtiesThreshold - originalCoverage) * seconds
 			}
 		}
 
 		// Calculate rotation based on the current rotational momentum.
-		let newRotation = rotate(360 * this.momentum.rpm * real.minutes, this.momentum.axis)
+		let newRotation = rotate(
+			360 * this.momentum.rpm * real.minutes,
+			this.momentum.axis,
+		)
 
 		// Calculate rotation based on the current rotational inertia.
 		if (this.momentum.rpm == 0 && this.inertia.rpm > 0) {
@@ -477,9 +480,9 @@ class GameState {
 					360 * this.inertia.rpm * real.minutes,
 					this.inertia.axis,
 				),
-				newRotation
-			);
-			this.inertia.rpm *= 1 - frictionCoefficient;
+				newRotation,
+			)
+			this.inertia.rpm *= 1 - frictionCoefficient
 		}
 
 		this.rotation = mult(newRotation, this.rotation)
@@ -487,84 +490,84 @@ class GameState {
 		// Advance the projectiles.
 		this.projectiles.forEach((projectile) =>
 			projectile.advanceTime(milliseconds)
-		);
+		)
 
 		// Spawn a new bug if necessary.
-		const secondsSinceLastBug = (this.time - this.timeOfLastBug) / 1000;
+		const secondsSinceLastBug = (this.time - this.timeOfLastBug) / 1000
 		const bugSpawnCooldown = 1 /
-			(bugSpawnFrequency * bugSpawnFrequencyModifier);
+			(bugSpawnFrequency * bugSpawnFrequencyModifier)
 		if (
 			secondsSinceLastBug >= bugSpawnCooldown &&
 			this.bugs.length < bugCapacity * bugCapacityModifier &&
 			!this.bugsEradicated
 		) {
-			this.timeOfLastBug = this.time;
-			let bugRotation = mat4();
+			this.timeOfLastBug = this.time
+			let bugRotation = mat4()
 			bugRotation = mult(
 				rotate(Math.random() * 360, [1, 0, 0]),
 				bugRotation,
-			);
+			)
 			bugRotation = mult(
 				rotate(Math.random() * 360, [0, 1, 0]),
 				bugRotation,
-			);
+			)
 			bugRotation = mult(
 				rotate(Math.random() * 360, [0, 0, 1]),
 				bugRotation,
-			);
-			let bugColor = [Math.random(), Math.random(), Math.random()];
+			)
+			let bugColor = [Math.random(), Math.random(), Math.random()]
 			// all bugs will be equally "bright." This keeps them from blending into the sphere.
-			bugColor = normalize(bugColor);
-			bugColor.push(1);
+			bugColor = normalize(bugColor)
+			bugColor.push(1)
 			this.bugs.push({
 				rotationMatrix: bugRotation,
 				arcLength: 0,
 				color: bugColor,
 				elevation: this.bugs.length,
 				spawnTime: this.time,
-			});
+			})
 		}
 
 		// Grow the bugs and set their elevation to avoid overlap.
 		this.bugs = this.bugs.map((bug, i) => {
-			const increment = bugGrowthRate * bugGrowthRateModifier * seconds;
+			const increment = bugGrowthRate * bugGrowthRateModifier * seconds
 			if (bug.arcLength + increment <= Math.PI) {
-				bug.arcLength += increment;
+				bug.arcLength += increment
 			} else {
-				bug.arcLength = Math.PI;
+				bug.arcLength = Math.PI
 			}
-			bug.elevation = (i + 1) * bugElevationGap;
-			return bug;
-		});
+			bug.elevation = (i + 1) * bugElevationGap
+			return bug
+		})
 
 		// Grow the inner arc length of the dying bugs. If any of them are
 		// fully dead, delete them from the game.
 		this.dyingBugs.map((bug) => {
-			bug.innerArcLength += bugDeathRate * seconds;
-		});
+			bug.innerArcLength += bugDeathRate * seconds
+		})
 		this.dyingBugs = this.dyingBugs.filter(
 			({ innerArcLength, arcLength }) => {
-				return innerArcLength < arcLength;
+				return innerArcLength < arcLength
 			},
-		);
+		)
 
 		// The height of the highest bug. If a projectile is above this, we
 		// know that it is definitely not colliding yet.
 		const maximumCollisionDistance = this.config.baseSphereRadius +
-			this.config.bugElevationGap * this.bugs.length;
+			this.config.bugElevationGap * this.bugs.length
 
 		for (let projectile of this.projectiles) {
-			const dist = projectile.radialDistance;
+			const dist = projectile.radialDistance
 
 			// Ignore any projectiles that are definitely not colliding yet.
 			if (dist > maximumCollisionDistance) {
-				continue;
+				continue
 			}
 
 			// Handle the nuke case.
-			if (dist <= this.config.baseSphereRadius && projectile.isNuke) {
-				this.score += this.config.scoreSettings.onWin;
-				this.bugsEradicated = true;
+			if (projectile.isNuke) {
+				this.score += this.config.scoreSettings.onWin
+				this.bugsEradicated = true
 				this.bugs.forEach((bug) =>
 					this.dyingBugs.push({
 						...bug,
@@ -572,70 +575,68 @@ class GameState {
 						innerArcLength: 0,
 						color: dyingBugColor,
 					})
-				);
-				this.bugs = [];
-				this.projectiles = this.projectiles.filter((x) =>
-					x != projectile
-				);
-				continue;
+				)
+				this.bugs = []
+				this.projectiles = this.projectiles.filter((x) => x != projectile)
+				continue
 			}
 
 			// Find any bugs in the collision course.
 			const bugsInCollisionCourse = this.bugs.filter((bug) => {
-				const withinDistance = 
- 					dist <= this.config.baseSphereRadius + bug.elevation;
-				const onCollisionCourse = willCollide(projectile, bug);
-				return withinDistance && onCollisionCourse;
-			});
+				const withinDistance =
+					dist <= this.config.baseSphereRadius + bug.elevation
+				const onCollisionCourse = willCollide(projectile, bug)
+				return withinDistance && onCollisionCourse
+			})
 
 			// Handle the miss case.
 			if (bugsInCollisionCourse.length == 0) {
-				this.score += this.config.scoreSettings.missedShot;
-				continue;
+				this.score += this.config.scoreSettings.missedShot
+				continue
 			}
 
 			// Projectile hits the topmost bug.
-			this.score += scoreSettings.landedShot;
+			this.score += scoreSettings.landedShot
 			const bugHit = bugsInCollisionCourse.reduce((bug1, bug2) => {
 				if (bug1.elevation > bug2.elevation) {
-					return bug1;
+					return bug1
 				}
-				return bug2;
-			});
-			this.bugs = this.bugs.filter((el) => el != bugHit);
+				return bug2
+			})
+			this.bugs = this.bugs.filter((el) => el != bugHit)
 			this.dyingBugs.push({
 				...bugHit,
 				deathTime: this.time,
 				innerArcLength: 0,
 				color: dyingBugColor,
-			});
+			})
 
 			// Delete the projectile.
-			this.projectiles = this.projectiles.filter((x) => x != projectile);
+			this.projectiles = this.projectiles.filter((x) => x != projectile)
 		}
 
 		// Filter out projectiles that missed the sphere or are inside it.
 		this.projectiles = this.projectiles.filter(({ radialDistance }) => {
-			const inBounds = radialDistance < 1.2 * this.config.maxDistance;
-			const outsideSphere = radialDistance > this.config.baseSphereRadius;
-			return inBounds && outsideSphere;
-		});
+			const inBounds = radialDistance < 1.2 * this.config.maxDistance
+			const outsideSphere = radialDistance > this.config.baseSphereRadius
+			return inBounds && outsideSphere
+		})
 
 		// Emit relevant events
 		if (this.score != originalScore) {
-			this.handleEvent("score");
+			this.handleEvent("score")
 		}
 		if (this.survivorCount != originalSurvivorCount) {
-			this.handleEvent("survivor");
+			this.handleEvent("survivor")
 		}
 		if (this.overdriveCharge != originalOverdriveCharge) {
-			this.handleEvent("overdrivecharge");
+			this.handleEvent("overdrivecharge")
 		}
 		if (this.currentHeat != originalHeat) {
 			this.handleEvent("heat")
 		}
-		this.handleEvent("coverage");
-		this.handleEvent("timeremaining");
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
 	}
 
 	/**
@@ -644,8 +645,8 @@ class GameState {
 	 * @public
 	 */
 	activateOverdrive() {
-		if (this.overdriveCharge != 1) return;
-		if (this.time >= this.config.timeLimit) return;
+		if (this.overdriveCharge != 1) return
+		if (this.time >= this.config.timeLimit) return
 
 		if (this.overheated) {
 			this.overheated = false
@@ -654,8 +655,8 @@ class GameState {
 		this.currentHeat = 0
 		this.handleEvent("heat")
 
-		this.overdriveActive = true;
-		this.handleEvent("activateoverdrive");
+		this.overdriveActive = true
+		this.handleEvent("activateoverdrive")
 	}
 
 	/**
@@ -666,12 +667,12 @@ class GameState {
 	 * will be launched.
 	 */
 	launchProjectile(target = [0, 0, 0]) {
-		if (this.paused) return;
+		if (this.paused) return
 
 		let secondsSinceLastShot = (this.time - this.timeOfLastProjectile) /
-			1000;
+			1000
 		if (this.overdriveActive) {
-			secondsSinceLastShot /= this.config.overdriveTemporalModifier;
+			secondsSinceLastShot /= this.config.overdriveTemporalModifier * 4
 		}
 
 		if (secondsSinceLastShot < this.config.cannonCooldown) {
@@ -690,14 +691,12 @@ class GameState {
 			}
 		}
 
-		this.timeOfLastProjectile = this.time;
-
-		this.odd = !this.odd;
+		this.timeOfLastProjectile = this.time
 
 		this.projectiles.push(
 			new Projectile(
 				transform([transpose(this.rotation)], [
-					this.odd ? -0.3 : 0.3,
+					0.3,
 					-0.2,
 					this.distance,
 				]),
@@ -706,7 +705,18 @@ class GameState {
 				0.1,
 				0.01,
 			),
-		);
+			new Projectile(
+				transform([transpose(this.rotation)], [
+					-0.3,
+					-0.2,
+					this.distance,
+				]),
+				transform([transpose(this.rotation)], target),
+				this.config.projectileSpeed,
+				0.1,
+				0.01,
+			),
+		)
 	}
 
 	/**
@@ -719,9 +729,9 @@ class GameState {
 	 * rotational momentum.
 	 */
 	setMomentum(axis, rpm) {
-		if (this.paused) return;
+		if (this.paused) return
 
-		this.momentum = { axis, rpm };
+		this.momentum = { axis, rpm }
 	}
 
 	/**
@@ -730,7 +740,7 @@ class GameState {
 	 * @returns {{ axis: number[], rpm: number }}
 	 */
 	getMomentum() {
-		return this.momentum;
+		return this.momentum
 	}
 
 	/**
@@ -743,13 +753,13 @@ class GameState {
 	 * the axis.
 	 */
 	applyRotation(axis, angle) {
-		this.momentum.rpm = 0;
-		this.inertia.rpm = 0;
+		this.momentum.rpm = 0
+		this.inertia.rpm = 0
 
 		this.rotation = mult(
 			rotate(angle, axis),
 			this.rotation,
-		);
+		)
 	}
 
 	/**
@@ -759,7 +769,7 @@ class GameState {
 	 * @param {number} rpm The number of rotations per minute.
 	 */
 	setInertia(axis, rpm) {
-		this.inertia = { axis, rpm };
+		this.inertia = { axis, rpm }
 	}
 
 	/**
@@ -772,13 +782,13 @@ class GameState {
 	 * @returns {(event: GameEvent) => void} a reference to the event handler.
 	 */
 	on(event, handler) {
-		let handlers = this.listeners.get(event);
+		let handlers = this.listeners.get(event)
 		if (handlers === undefined) {
-			handlers = [];
+			handlers = []
 		}
-		handlers.push(handler);
-		this.listeners.set(event, handlers);
-		return handler;
+		handlers.push(handler)
+		this.listeners.set(event, handlers)
+		return handler
 	}
 
 	/**
@@ -792,14 +802,14 @@ class GameState {
 	 * @returns {void}
 	 */
 	disableListener(event, handler) {
-		let handlers = this.listeners.get(event);
+		let handlers = this.listeners.get(event)
 		if (handlers === undefined) {
-			return;
+			return
 		}
 		if (handlers.length == 0) {
-			return;
+			return
 		}
-		this.listeners.set(event, handlers.filter((el) => el != handler));
+		this.listeners.set(event, handlers.filter((el) => el != handler))
 	}
 
 	/**
@@ -810,12 +820,12 @@ class GameState {
 	 * `"pause"`, `"unpause"`, etc.
 	 */
 	handleEvent(eventType) {
-		const callbacks = this.listeners.get(eventType);
+		const callbacks = this.listeners.get(eventType)
 		if (callbacks === undefined) {
-			return;
+			return
 		}
 
-		let continuePropagation = true;
+		let continuePropagation = true
 		const eventObject = {
 			score: this.score,
 			coverage: this.coverage,
@@ -824,14 +834,14 @@ class GameState {
 			overdriveCharge: this.overdriveCharge,
 			heat: this.currentHeat,
 			stopPropagation: () => {
-				continuePropagation = false;
+				continuePropagation = false
 			},
-		};
+		}
 
 		for (const callback of callbacks) {
-			callback(eventObject);
+			callback(eventObject)
 			if (!continuePropagation) {
-				break;
+				break
 			}
 		}
 	}
@@ -843,8 +853,8 @@ class GameState {
 	 * @public
 	 */
 	pause() {
-		this.paused = true;
-		this.handleEvent("pause");
+		this.paused = true
+		this.handleEvent("pause")
 	}
 
 	/**
@@ -854,15 +864,15 @@ class GameState {
 	 * @public
 	 */
 	unpause() {
-		this.paused = false;
-		this.handleEvent("unpause");
+		this.paused = false
+		this.handleEvent("unpause")
 	}
 
 	/**
 	 * @returns {boolean} `true` if the game is paused, `false` otherwise.
 	 */
 	get isPaused() {
-		return this.paused;
+		return this.paused
 	}
 
 	/**
@@ -873,12 +883,12 @@ class GameState {
 	start() {
 		const millisecondInterval = 1 / this.config.refreshRate * 1000
 
-		this.render();
+		this.render()
 		this.handleEvent("score")
 		this.handleEvent("coverage")
 		this.handleEvent("timeremaining")
 		this.handleEvent("survivor")
-		this.handleEvent("overdrivecharge");
+		this.handleEvent("overdrivecharge")
 		this.handleEvent("heat")
 
 		let lastTime = Date.now()
@@ -894,7 +904,7 @@ class GameState {
 			this.advanceTime(interval)
 			lastTime = Date.now()
 			requestAnimationFrame(() => this.render())
-		}, millisecondInterval);
+		}, millisecondInterval)
 	}
 
 	/**
@@ -923,17 +933,17 @@ class GameState {
 		this.newSurvivors = 0
 		this.bugsEradicated = false
 		this.overdriveCharge = 0
-		this.heat = 0
+		this.currentHeat = 0
 		this.overheated = false
 
-		this.handleEvent("score");
-		this.handleEvent("coverage");
-		this.handleEvent("timeremaining");
-		this.handleEvent("survivor");
-		this.handleEvent("overdrivecharge");
+		this.handleEvent("score")
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
+		this.handleEvent("survivor")
+		this.handleEvent("overdrivecharge")
 		this.handleEvent("heat")
 
-		this.start();
+		this.start()
 	}
 
 	/**
@@ -942,7 +952,7 @@ class GameState {
 	 * @public
 	 */
 	end() {
-		clearInterval(this.gameLoop);
+		clearInterval(this.gameLoop)
 	}
 
 	/**
@@ -952,8 +962,8 @@ class GameState {
 	 * @public
 	 */
 	launchNuke() {
-		if (this.time < this.config.timeLimit) return;
-		if (this.bugsEradicated) return;
+		if (this.time < this.config.timeLimit) return
+		if (this.bugsEradicated) return
 
 		this.projectiles.push(
 			new Projectile(
@@ -964,7 +974,7 @@ class GameState {
 				0.1,
 				true,
 			),
-		);
+		)
 	}
 
 	/**
@@ -975,18 +985,18 @@ class GameState {
 	 * @public
 	 */
 	get zoom() {
-		const { minDistance, maxDistance } = this.config;
-		return (this.distance - minDistance) / (maxDistance - minDistance);
+		const { minDistance, maxDistance } = this.config
+		return (this.distance - minDistance) / (maxDistance - minDistance)
 	}
 	/**
 	 * @public
 	 * @param newZoom
 	 */
 	set zoom(newZoom) {
-		const { minDistance, maxDistance } = this.config;
-		if (newZoom > 1) newZoom = 1;
-		if (newZoom < 0) newZoom = 0;
-		this.distance = minDistance + newZoom * (maxDistance - minDistance);
+		const { minDistance, maxDistance } = this.config
+		if (newZoom > 1) newZoom = 1
+		if (newZoom < 0) newZoom = 0
+		this.distance = minDistance + newZoom * (maxDistance - minDistance)
 	}
 
 	/**
@@ -996,11 +1006,11 @@ class GameState {
 	 * @public
 	 */
 	get dragSensitivity() {
-		return this.config.dragRotationSensitivity;
+		return this.config.dragRotationSensitivity
 	}
 
 	get keySensitivity() {
-		return this.config.keyRotationRPM;
+		return this.config.keyRotationRPM
 	}
 
 	/**
@@ -1015,10 +1025,10 @@ class GameState {
 			.map(({ arcLength }) =>
 				sphereSurfaceArea(arcLength, this.config.baseSphereRadius)
 			)
-			.reduce((a, b) => a + b, 0);
+			.reduce((a, b) => a + b, 0)
 		const baseSphereArea = 4 * Math.PI *
-			Math.pow(this.config.baseSphereRadius, 2);
-		return Math.min(totalBugArea / baseSphereArea, 1);
+			Math.pow(this.config.baseSphereRadius, 2)
+		return Math.min(totalBugArea / baseSphereArea, 1)
 	}
 
 	/**
@@ -1027,7 +1037,7 @@ class GameState {
 	 * @public
 	 */
 	get timeRemaining() {
-		return Math.max(0, this.config.timeLimit - this.time);
+		return Math.max(0, this.config.timeLimit - this.time)
 	}
 
 	/**
@@ -1037,7 +1047,7 @@ class GameState {
 	 */
 	get survivorCount() {
 		return this.config.initialSurvivorCount - this.casualties +
-			this.newSurvivors;
+			this.newSurvivors
 	}
 
 	/**
@@ -1046,7 +1056,7 @@ class GameState {
 	 * @private
 	 */
 	get difficultyModifier() {
-		return this.config.difficultyModifiers[this.difficulty];
+		return this.config.difficultyModifiers[this.difficulty]
 	}
 
 	/**
@@ -1056,15 +1066,15 @@ class GameState {
 	 * @type {GameDifficulty}
 	 */
 	get difficultySetting() {
-		return this.difficulty;
+		return this.difficulty
 	}
 	/**
 	 * @public
 	 * @param {GameDifficulty} newDifficulty
 	 */
 	set difficultySetting(newDifficulty) {
-		this.difficulty = newDifficulty;
-		this.restart();
-		this.pause();
+		this.difficulty = newDifficulty
+		this.restart()
+		this.pause()
 	}
 }

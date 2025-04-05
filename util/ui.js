@@ -8,19 +8,17 @@
  */
 class UI {
 	/**
-	 * 
-	 * 
 	 * @param {UIMapping} mapping Indicates which HTML elements to use for each
-	 * UI component. 
+	 * UI component.
 	 * @param {ConditionalStyleProperties} conditionalStyles Defines some style
 	 * properties that should be set for specific elements when they are in
-	 * a given condition. 
+	 * a given condition.
 	 */
 	constructor(mapping, conditionalStyles) {
 		/**
-		 * Maps the menu components to their associated HTML element in the 
+		 * Maps the menu components to their associated HTML element in the
 		 * document.
-		 * 
+		 *
 		 * @public
 		 * @readonly
 		 * @type {UIMapping}
@@ -28,8 +26,8 @@ class UI {
 		this.element = mapping
 
 		/**
-		 * Defines some style properties that should be set for specific 
-		 * elements when they are in a given condition. 
+		 * Defines some style properties that should be set for specific
+		 * elements when they are in a given condition.
 		 */
 		this.conditionalStyles = conditionalStyles
 
@@ -37,7 +35,7 @@ class UI {
 		 * A boolean flag to indicate whether or not the UI is currently
 		 * in an animation. If it is, then it probably shouldn't accept any
 		 * new inputs.
-		 * 
+		 *
 		 * @private
 		 * @type {boolean}
 		 */
@@ -55,41 +53,41 @@ class UI {
 
 	/**
 	 * The score that is displayed in the UI.
-	 * 
+	 *
 	 * @param {number} newScore The updated score to display. This value will
 	 * be rounded to the nearest integer.
 	 */
 	set score(newScore) {
-		this.element.textDisplay.score.textContent = 
-			Math.round(newScore).toString()
+		this.element.textDisplay.score.textContent = Math.round(newScore)
+			.toString()
 	}
 
 	/**
 	 * The survivor count that is displayed in the UI.
-	 * 
+	 *
 	 * @param {number} newSurvivorCount The updated survivor count to display.
 	 */
 	set survivorCountNumber(newSurvivorCount) {
-		this.element.textDisplay.survivor.textContent =
-			Math.round(newSurvivorCount).toString()
+		this.element.textDisplay.survivor.textContent = Math.round(newSurvivorCount)
+			.toString()
 	}
 
 	/**
 	 * Sets the progress on the survivor progress bar in the UI.
-	 * 
+	 *
 	 * @param {number} newProgress A number from `0` to `1` representing the
 	 * percentage of the progress bar to fill.
 	 */
 	set survivorCountProgress(newProgress) {
 		this.element.progressBar.survivor.style.setProperty(
 			"--progress",
-			newProgress.toString()
+			newProgress.toString(),
 		)
 	}
 
 	/**
 	 * Sets the temperature on the heat progress bar in the UI.
-	 * 
+	 *
 	 * @param {number} newProgress A number from `0` to `1` representing the
 	 * percentage of the progress bar to fill.
 	 */
@@ -97,26 +95,26 @@ class UI {
 		let hotColor = normalize([255, 100, 0])
 		let coolColor = normalize([255, 255, 153])
 
-		let proportionalHot = hotColor.map(x => x * newProgress)
-		let proportionalCool = coolColor.map(x => x * (1 - newProgress))
+		let proportionalHot = hotColor.map((x) => x * newProgress)
+		let proportionalCool = coolColor.map((x) => x * (1 - newProgress))
 		let color = proportionalHot.map((_, i) => {
 			return proportionalHot[i] + proportionalCool[i]
 		})
 		color = normalize(color)
-		color = color.map(x => x * 255 * 1.5)
+		color = color.map((x) => x * 255 * 1.5)
 
 		this.element.progressBar.heat.style.setProperty(
 			"--progress",
-			newProgress.toString()
+			newProgress.toString(),
 		)
 		this.element.progressBar.heat.style.setProperty(
 			"--inner-color",
-			`rgb(${color[0]}, ${color[1]}, ${color[2]})`
+			`rgb(${color[0]}, ${color[1]}, ${color[2]})`,
 		)
 
 		if (newProgress >= 1) {
 			this.element.textDisplay.heat.innerText = `OVERHEATED`
-		} 
+		}
 		if (newProgress == 0) {
 			this.element.textDisplay.heat.innerText = ""
 		}
@@ -124,15 +122,15 @@ class UI {
 
 	/**
 	 * Sets the progress on the overdrive progress bar in the UI.
-	 * 
-	 * @param {number} newProgress A number representing the percentage of the 
+	 *
+	 * @param {number} newProgress A number representing the percentage of the
 	 * progress bar to fill, where `0` is 0% and `1` is 100%. Note that values
 	 * above 100% are allowed and will widen the progress bar.
 	 */
 	set overdriveChargeProgress(newProgress) {
 		this.element.progressBar.overdrive.style.setProperty(
 			"--progress",
-			newProgress.toString()
+			newProgress.toString(),
 		)
 		if (newProgress == 1) {
 			this.element.textDisplay.overdrive.innerHTML = `READY`
@@ -143,32 +141,32 @@ class UI {
 
 	/**
 	 * The coverage percentage that is displayed in the UI.
-	 * 
+	 *
 	 * @param {number} newCoverage A number from `0` to `1` that represents the
 	 * updated coverage to display.
 	 */
 	set coverage(newCoverage) {
 		newCoverage = Math.min(Math.ceil(newCoverage * 100), 100)
-		this.element.textDisplay.coverage.textContent =
-			`${newCoverage}%`
+		this.element.textDisplay.coverage.textContent = `${newCoverage}%`
 	}
 
 	/**
 	 * The remaining time displayed in the UI.
-	 * 
+	 *
 	 * @param {number} newTimeRemaining The time remaining in milliseconds.
 	 */
 	set timeRemaining(newTimeRemaining) {
 		const minutes = Math.floor(newTimeRemaining / 1000 / 60)
 		const seconds = Math.floor(newTimeRemaining / 1000 - minutes * 60)
 
-		this.element.textDisplay.timeRemaining.textContent =
-			`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+		this.element.textDisplay.timeRemaining.textContent = `${
+			minutes < 10 ? "0" : ""
+		}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
 	}
 
 	/**
 	 * The game's difficulty setting.
-	 * 
+	 *
 	 * @param {GameDifficulty} newDifficulty The new difficulty setting.
 	 */
 	set difficulty(newDifficulty) {
@@ -179,7 +177,7 @@ class UI {
 		this.difficultyTextChangeInterval = transitionText(
 			this.element.textDisplay.difficulty,
 			newDifficulty,
-			200
+			200,
 		)
 	}
 
@@ -187,18 +185,18 @@ class UI {
 	 * Applies styles to an element. Optionally, this can be treated as an
 	 * animation in which case a callback can be specified to be executed upon
 	 * completion.
-	 * 
+	 *
 	 * The most important change when indicating an animation is that no two
 	 * animations will be allowed at the same time. I.e., if this function
 	 * determines that there is currently an animation in progress, it will not
 	 * start a new one (instead, the call will be ignored).
-	 * 
+	 *
 	 * @param {HTMLElement} element The element to apply the styles to.
 	 * @param {StyleProperty[]} newStyles The new style properties to apply to
 	 * the element.
 	 * @param {number | null} duration If not `null`, this value indicates that
 	 * the style change is an animation of the given duration in milliseconds.
-	 * In most cases, this is due to a `transition` style property on the 
+	 * In most cases, this is due to a `transition` style property on the
 	 * element.
 	 * @param {(() => void) | null} uponCompletion A callback function to be
 	 * executed once the animation (if there is one) is completed.
@@ -210,7 +208,7 @@ class UI {
 			return
 		}
 
-		newStyles.forEach(([ property, value ]) => {
+		newStyles.forEach(([property, value]) => {
 			element.style.setProperty(property, value)
 		})
 
@@ -223,16 +221,16 @@ class UI {
 		}, duration)
 	}
 
-	/** 
-	 * @param {(() => void) | null} uponCompletion An optional callback 
-	 * function that will be executed when the animation finishes. 
+	/**
+	 * @param {(() => void) | null} uponCompletion An optional callback
+	 * function that will be executed when the animation finishes.
 	 */
 	hidePauseMenu(uponCompletion = null) {
 		this.applyStyles(
 			this.element.menu.pause,
 			this.conditionalStyles.pauseMenu.hidden,
 			ANIMATION_TIME,
-			uponCompletion
+			uponCompletion,
 		)
 		this.pauseMenuShown = false
 	}
@@ -241,13 +239,13 @@ class UI {
 		this.applyStyles(
 			this.element.menu.pause,
 			this.conditionalStyles.pauseMenu.shown,
-			ANIMATION_TIME
+			ANIMATION_TIME,
 		)
 		this.pauseMenuShown = true
 	}
 
 	/**
-	 * @param {(() => void) | null} uponCompletion An optional callback 
+	 * @param {(() => void) | null} uponCompletion An optional callback
 	 * function that will be executed when the animation finishes.
 	 */
 	hideInstructions(uponCompletion = null) {
@@ -255,7 +253,7 @@ class UI {
 			this.element.informationCard.instructions,
 			this.conditionalStyles.infoPanel.hidden,
 			ANIMATION_TIME,
-			uponCompletion
+			uponCompletion,
 		)
 		this.instructionsShown = false
 	}
@@ -264,13 +262,13 @@ class UI {
 		this.applyStyles(
 			this.element.informationCard.instructions,
 			this.conditionalStyles.infoPanel.shown,
-			ANIMATION_TIME
+			ANIMATION_TIME,
 		)
 		this.instructionsShown = true
 	}
 
 	/**
-	 * @param {(() => void) | null} uponCompletion An optional callback 
+	 * @param {(() => void) | null} uponCompletion An optional callback
 	 * function that will be executed when the animation finishes.
 	 */
 	hideSettings(uponCompletion = null) {
@@ -278,7 +276,7 @@ class UI {
 			this.element.menu.settings,
 			this.conditionalStyles.settings.hidden,
 			ANIMATION_TIME,
-			uponCompletion
+			uponCompletion,
 		)
 		this.settingsShown = false
 	}
@@ -287,7 +285,7 @@ class UI {
 		this.applyStyles(
 			this.element.menu.settings,
 			this.conditionalStyles.settings.shown,
-			ANIMATION_TIME
+			ANIMATION_TIME,
 		)
 		this.settingsShown = true
 	}

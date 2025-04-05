@@ -22,38 +22,38 @@ function initShaderProgram(gl, vShaderSource, fShaderSource) {
 	 * the console.
 	 */
 	const loadShader = (type, source) => {
-		const shader = gl.createShader(type);
+		const shader = gl.createShader(type)
 		if (shader == null) {
-			console.error(`Failed to create shader:\n${source}`);
-			return null;
+			console.error(`Failed to create shader:\n${source}`)
+			return null
 		}
 
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
+		gl.shaderSource(shader, source)
+		gl.compileShader(shader)
 
 		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 			console.error(
 				`An error occurred compiling the shaders:\n${
 					gl.getShaderInfoLog(shader)
 				}`,
-			);
-			gl.deleteShader(shader);
-			return null;
+			)
+			gl.deleteShader(shader)
+			return null
 		}
 
-		return shader;
-	};
-
-	const vShader = loadShader(gl.VERTEX_SHADER, vShaderSource);
-	const fShader = loadShader(gl.FRAGMENT_SHADER, fShaderSource);
-	if (vShader == null || fShader == null) {
-		return null;
+		return shader
 	}
 
-	const shaderProgram = gl.createProgram();
-	gl.attachShader(shaderProgram, vShader);
-	gl.attachShader(shaderProgram, fShader);
-	gl.linkProgram(shaderProgram);
+	const vShader = loadShader(gl.VERTEX_SHADER, vShaderSource)
+	const fShader = loadShader(gl.FRAGMENT_SHADER, fShaderSource)
+	if (vShader == null || fShader == null) {
+		return null
+	}
+
+	const shaderProgram = gl.createProgram()
+	gl.attachShader(shaderProgram, vShader)
+	gl.attachShader(shaderProgram, fShader)
+	gl.linkProgram(shaderProgram)
 
 	// if creating the shader program failed, log an error.
 	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
@@ -61,9 +61,9 @@ function initShaderProgram(gl, vShaderSource, fShaderSource) {
 			`Unable to initialize the shader program:\n${
 				gl.getProgramInfoLog(shaderProgram)
 			}`,
-		);
-		return null;
+		)
+		return null
 	}
 
-	return shaderProgram;
+	return shaderProgram
 }

@@ -8,8 +8,7 @@
 /// <reference path="./misc.js" />
 
 /**
- * 
- * @param {WebGLRenderingContext} gl 
+ * @param {WebGLRenderingContext} gl
  * @param {number[][]} projectionMatrix
  * @param {Sphere} baseSphere
  * @param {WebGLProgram} pointShaderProgram
@@ -19,18 +18,18 @@
  * @param {Array<DyingBug>} dyingBugs
  * @param {Array<Projectile>} projectiles
  * @param {Options | null} options
-*/
+ */
 function renderScene(
-	gl, 
+	gl,
 	projectionMatrix,
-	baseSphere, 
-	pointShaderProgram, 
-	sphereShaderProgram, 
+	baseSphere,
+	pointShaderProgram,
+	sphereShaderProgram,
 	rectangleShaderProgram,
 	bugs,
 	dyingBugs,
-	projectiles, 
-	options = null
+	projectiles,
+	options = null,
 ) {
 	// If the canvas is offscreen, don't bother.
 	if (gl.canvas instanceof OffscreenCanvas) {
@@ -41,7 +40,7 @@ function renderScene(
 	if (options == null) {
 		options = {
 			rotate: mat4(),
-			distance: 6,	
+			distance: 6,
 		}
 	}
 	if (options.rotate == undefined) options.rotate = mat4()
@@ -63,30 +62,60 @@ function renderScene(
 	// Locations of attributes and uniforms in the shaders.
 	const loc = {
 		points: {
-			aVertexPosition: gl.getAttribLocation(pointShaderProgram, "aVertexPosition"),
-			uModelViewMatrix: gl.getUniformLocation(pointShaderProgram, "uModelViewMatrix"),
-			uProjectionMatrix: gl.getUniformLocation(pointShaderProgram, "uProjectionMatrix"),
-			uColor: gl.getUniformLocation(pointShaderProgram, "uColor")
+			aVertexPosition: gl.getAttribLocation(
+				pointShaderProgram,
+				"aVertexPosition",
+			),
+			uModelViewMatrix: gl.getUniformLocation(
+				pointShaderProgram,
+				"uModelViewMatrix",
+			),
+			uProjectionMatrix: gl.getUniformLocation(
+				pointShaderProgram,
+				"uProjectionMatrix",
+			),
+			uColor: gl.getUniformLocation(pointShaderProgram, "uColor"),
 		},
 		baseSphere: {
-			aVertexPosition: gl.getAttribLocation(sphereShaderProgram, "aVertexPosition"),
-			uModelViewMatrix: gl.getUniformLocation(sphereShaderProgram, "uModelViewMatrix"),
-			uProjectionMatrix: gl.getUniformLocation(sphereShaderProgram, "uProjectionMatrix"),
-			uColor: gl.getUniformLocation(sphereShaderProgram, "uColor")
+			aVertexPosition: gl.getAttribLocation(
+				sphereShaderProgram,
+				"aVertexPosition",
+			),
+			uModelViewMatrix: gl.getUniformLocation(
+				sphereShaderProgram,
+				"uModelViewMatrix",
+			),
+			uProjectionMatrix: gl.getUniformLocation(
+				sphereShaderProgram,
+				"uProjectionMatrix",
+			),
+			uColor: gl.getUniformLocation(sphereShaderProgram, "uColor"),
 		},
 		rectangle: {
-			aVertexPosition: gl.getAttribLocation(rectangleShaderProgram, "aVertexPosition"),
-			uModelViewMatrix: gl.getUniformLocation(rectangleShaderProgram, "uModelViewMatrix"),
-			uProjectionMatrix: gl.getUniformLocation(rectangleShaderProgram, "uProjectionMatrix")
-		}
+			aVertexPosition: gl.getAttribLocation(
+				rectangleShaderProgram,
+				"aVertexPosition",
+			),
+			uModelViewMatrix: gl.getUniformLocation(
+				rectangleShaderProgram,
+				"uModelViewMatrix",
+			),
+			uProjectionMatrix: gl.getUniformLocation(
+				rectangleShaderProgram,
+				"uProjectionMatrix",
+			),
+		},
 	}
 
-	// Create the model view matrix, which factors in rotations and distance 
+	// Create the model view matrix, which factors in rotations and distance
 	// (along the z-axis), based on the `options` argument.
 	// The functions used here are from `lib/MV.js`
 	let modelViewMatrix = mat4()
 	modelViewMatrix = mult(options.rotate, modelViewMatrix)
-	modelViewMatrix = mult(translate(0, 0, -1 * options.distance), modelViewMatrix)
+	modelViewMatrix = mult(
+		translate(0, 0, -1 * options.distance),
+		modelViewMatrix,
+	)
 
 	// Draw the base sphere.
 	gl.useProgram(sphereShaderProgram)
@@ -111,7 +140,12 @@ function renderScene(
 	)
 	gl.uniform4fv(loc.baseSphere.uColor, new Float32Array(options.sphereColor))
 
-	gl.drawElements(gl.TRIANGLES, baseSphere.indices.length, gl.UNSIGNED_SHORT, 0)
+	gl.drawElements(
+		gl.TRIANGLES,
+		baseSphere.indices.length,
+		gl.UNSIGNED_SHORT,
+		0,
+	)
 
 	// Draw the points.
 	gl.useProgram(pointShaderProgram)
@@ -140,27 +174,37 @@ function renderScene(
 		let bugModelViewMatrix = mat4()
 		bugModelViewMatrix = mult(bug.rotationMatrix, bugModelViewMatrix)
 		bugModelViewMatrix = mult(options.rotate, bugModelViewMatrix)
-		bugModelViewMatrix = mult(translate(0, 0, -1 * options.distance), bugModelViewMatrix)
+		bugModelViewMatrix = mult(
+			translate(0, 0, -1 * options.distance),
+			bugModelViewMatrix,
+		)
 
 		let innerArcLength = bug["innerArcLength"] ?? 0
 		const bugSphere = sphere(SPHERE_DIVISIONS, {
 			polarInterval: [innerArcLength, bug.arcLength],
-			// the base sphere has a radial distance of 1 we want the bugs 
+			// the base sphere has a radial distance of 1 we want the bugs
 			// to be *slightly* bigger.
 			radialDistance: 1 + bug.elevation,
-			isCone: true
+			isCone: true,
 		})
 
 		gl.useProgram(sphereShaderProgram)
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()) // buffer for distinct vertices
 		gl.bufferData(gl.ARRAY_BUFFER, bugSphere.vertices, gl.STATIC_DRAW)
-		gl.vertexAttribPointer(loc.points.aVertexPosition, 3, gl.FLOAT, false, 0, 0)
+		gl.vertexAttribPointer(
+			loc.points.aVertexPosition,
+			3,
+			gl.FLOAT,
+			false,
+			0,
+			0,
+		)
 		gl.enableVertexAttribArray(loc.points.aVertexPosition)
-	
+
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer()) // buffer for indices
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, bugSphere.indices, gl.STATIC_DRAW)
-	
+
 		gl.uniformMatrix4fv(
 			loc.baseSphere.uProjectionMatrix,
 			false,
@@ -173,7 +217,12 @@ function renderScene(
 		)
 		gl.uniform4fv(loc.baseSphere.uColor, new Float32Array(bug.color))
 
-		gl.drawElements(gl.TRIANGLES, bugSphere.indices.length, gl.UNSIGNED_SHORT, 0)
+		gl.drawElements(
+			gl.TRIANGLES,
+			bugSphere.indices.length,
+			gl.UNSIGNED_SHORT,
+			0,
+		)
 	}
 
 	// Draw the projectiles
@@ -186,12 +235,19 @@ function renderScene(
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()) // buffer for distinct vertices
 		gl.bufferData(gl.ARRAY_BUFFER, projectile.vertices, gl.STATIC_DRAW)
-		gl.vertexAttribPointer(loc.rectangle.aVertexPosition, 3, gl.FLOAT, false, 0, 0)
+		gl.vertexAttribPointer(
+			loc.rectangle.aVertexPosition,
+			3,
+			gl.FLOAT,
+			false,
+			0,
+			0,
+		)
 		gl.enableVertexAttribArray(loc.rectangle.aVertexPosition)
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer()) // buffer for indices
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, projectile.indices, gl.STATIC_DRAW)
-	
+
 		gl.uniformMatrix4fv(
 			loc.rectangle.uProjectionMatrix,
 			false,
@@ -203,6 +259,11 @@ function renderScene(
 			flatten(modelViewMatrix),
 		)
 
-		gl.drawElements(gl.TRIANGLES, projectile.indices.length, gl.UNSIGNED_SHORT, 0)
+		gl.drawElements(
+			gl.TRIANGLES,
+			projectile.indices.length,
+			gl.UNSIGNED_SHORT,
+			0,
+		)
 	}
 }

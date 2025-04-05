@@ -207,7 +207,7 @@ function main() {
 		minDistance: 3,
 		refreshRate: 60,
 		frictionCoefficient: 0.35,
-		heatPerShot: 0.04,
+		heatPerShot: 0.05,
 		coolingRate: 0.15,
 		projectileSpeed: 15,
 		bugGrowthRate: Math.PI / 72,

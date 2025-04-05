@@ -467,23 +467,22 @@ class GameState {
 			}
 		}
 
-		// Apply rotation based on the current rotational momentum.
-		this.rotation = mult(
-			rotate(360 * this.momentum.rpm * real.minutes, this.momentum.axis),
-			this.rotation,
-		);
+		// Calculate rotation based on the current rotational momentum.
+		let newRotation = rotate(360 * this.momentum.rpm * real.minutes, this.momentum.axis)
 
-		// Apply rotation based on the current rotational inertia.
+		// Calculate rotation based on the current rotational inertia.
 		if (this.momentum.rpm == 0 && this.inertia.rpm > 0) {
-			this.rotation = mult(
+			newRotation = mult(
 				rotate(
 					360 * this.inertia.rpm * real.minutes,
 					this.inertia.axis,
 				),
-				this.rotation,
+				newRotation
 			);
 			this.inertia.rpm *= 1 - frictionCoefficient;
 		}
+
+		this.rotation = mult(newRotation, this.rotation)
 
 		// Advance the projectiles.
 		this.projectiles.forEach((projectile) =>
@@ -617,7 +616,7 @@ class GameState {
 
 		// Filter out projectiles that missed the sphere or are inside it.
 		this.projectiles = this.projectiles.filter(({ radialDistance }) => {
-			const inBounds = radialDistance < 2 * this.config.maxDistance;
+			const inBounds = radialDistance < 1.2 * this.config.maxDistance;
 			const outsideSphere = radialDistance > this.config.baseSphereRadius;
 			return inBounds && outsideSphere;
 		});
@@ -872,29 +871,29 @@ class GameState {
 	 * @public
 	 */
 	start() {
-		const millisecondInterval = 1 / this.config.refreshRate * 1000;
+		const millisecondInterval = 1 / this.config.refreshRate * 1000
 
 		this.render();
-		this.handleEvent("score");
-		this.handleEvent("coverage");
-		this.handleEvent("timeremaining");
-		this.handleEvent("survivor");
+		this.handleEvent("score")
+		this.handleEvent("coverage")
+		this.handleEvent("timeremaining")
+		this.handleEvent("survivor")
 		this.handleEvent("overdrivecharge");
 		this.handleEvent("heat")
 
-		let lastTime = Date.now();
+		let lastTime = Date.now()
 		this.gameLoop = setInterval(() => {
 			if (this.paused) {
-				lastTime = Date.now();
-				return;
+				lastTime = Date.now()
+				return
 			}
-			let interval = Date.now() - lastTime;
+			let interval = Date.now() - lastTime
 			if (this.overdriveActive) {
-				interval *= this.config.overdriveTemporalModifier;
+				interval *= this.config.overdriveTemporalModifier
 			}
-			this.advanceTime(interval);
-			lastTime = Date.now();
-			this.render();
+			this.advanceTime(interval)
+			lastTime = Date.now()
+			requestAnimationFrame(() => this.render())
 		}, millisecondInterval);
 	}
 

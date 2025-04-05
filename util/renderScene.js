@@ -4,12 +4,13 @@
 /// <reference path="../lib_types/MV.d.ts" />
 /// <reference path="./sphere.js" />
 /// <reference path="../constants.js" />
-/// <reference path="./rectangle.js" />
+/// <reference path="./Projectile.js" />
 /// <reference path="./misc.js" />
 
 /**
  * 
  * @param {WebGLRenderingContext} gl 
+ * @param {number[][]} projectionMatrix
  * @param {Sphere} baseSphere
  * @param {WebGLProgram} pointShaderProgram
  * @param {WebGLProgram} sphereShaderProgram
@@ -21,6 +22,7 @@
 */
 function renderScene(
 	gl, 
+	projectionMatrix,
 	baseSphere, 
 	pointShaderProgram, 
 	sphereShaderProgram, 
@@ -78,15 +80,6 @@ function renderScene(
 			uProjectionMatrix: gl.getUniformLocation(rectangleShaderProgram, "uProjectionMatrix")
 		}
 	}
-
-	// Create the perspective projection matrix. 
-	// `perspective` is from `lib/MV.js`
-	const projectionMatrix = perspective(
-		45, 											// 45 degree field of view 
-		gl.canvas.clientWidth / gl.canvas.clientHeight, // aspect ratio
-		0.1, 											// the distance to the near clipping plane
-		100 											// the distance to the far clipping plane
-	)
 
 	// Create the model view matrix, which factors in rotations and distance 
 	// (along the z-axis), based on the `options` argument.
@@ -154,7 +147,8 @@ function renderScene(
 			polarInterval: [innerArcLength, bug.arcLength],
 			// the base sphere has a radial distance of 1 we want the bugs 
 			// to be *slightly* bigger.
-			radialDistance: 1 + bug.elevation
+			radialDistance: 1 + bug.elevation,
+			isCone: true
 		})
 
 		gl.useProgram(sphereShaderProgram)
@@ -184,25 +178,19 @@ function renderScene(
 
 	// Draw the projectiles
 	for (const projectile of projectiles) {
-		const sizeFactor = projectile.sizeFactor ?? 1
-		const projectileRectangle = rectangle(
-			projectile.relativeAxis, projectile.radialDistance, 
-			0.1 * sizeFactor, 0.01 * sizeFactor
-		)
-
-		let projectileMVMatrix = mat4()
-		projectileMVMatrix = mult(options.rotate, projectileMVMatrix)
-		projectileMVMatrix = mult(translate(0, 0, -1 * options.distance), projectileMVMatrix)
+		// let projectileMVMatrix = mat4()
+		// projectileMVMatrix = mult(options.rotate, projectileMVMatrix)
+		// projectileMVMatrix = mult(translate(0, 0, -1 * options.distance), projectileMVMatrix)
 
 		gl.useProgram(rectangleShaderProgram)
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()) // buffer for distinct vertices
-		gl.bufferData(gl.ARRAY_BUFFER, projectileRectangle.vertices, gl.STATIC_DRAW)
+		gl.bufferData(gl.ARRAY_BUFFER, projectile.vertices, gl.STATIC_DRAW)
 		gl.vertexAttribPointer(loc.rectangle.aVertexPosition, 3, gl.FLOAT, false, 0, 0)
 		gl.enableVertexAttribArray(loc.rectangle.aVertexPosition)
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer()) // buffer for indices
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, projectileRectangle.indices, gl.STATIC_DRAW)
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, projectile.indices, gl.STATIC_DRAW)
 	
 		gl.uniformMatrix4fv(
 			loc.rectangle.uProjectionMatrix,
@@ -212,9 +200,9 @@ function renderScene(
 		gl.uniformMatrix4fv(
 			loc.rectangle.uModelViewMatrix,
 			false,
-			flatten(projectileMVMatrix),
+			flatten(modelViewMatrix),
 		)
 
-		gl.drawElements(gl.TRIANGLES, projectileRectangle.indices.length, gl.UNSIGNED_SHORT, 0)
+		gl.drawElements(gl.TRIANGLES, projectile.indices.length, gl.UNSIGNED_SHORT, 0)
 	}
 }

@@ -11,6 +11,7 @@ button {
 }
 
 button:hover {
-	cursor: pointer;
+	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
+
 	color: var(--greeen);
 }

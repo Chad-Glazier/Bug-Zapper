@@ -1,6 +1,7 @@
 // @ts-check
 /// <reference path="../lib_types/MV.d.ts" />
 /// <reference path="./types.d.ts" />
+/// <reference path="./Projectile.js" />
 
 /**
  * Determines whether or not a given bug is included in the projectile's
@@ -14,10 +15,11 @@
 function willCollide(projectile, bug) {
 	let projectileLocalCoordinates = transform(
 		[transpose(bug.rotationMatrix)], 
-		normalize(projectile.relativeAxis)
+		normalize(projectile.position).map(x => x * (1 + bug.elevation))
 	)
+	projectileLocalCoordinates[2] = Math.max(-1, Math.min(1, projectileLocalCoordinates[2]))
 	let projectileLocalPolarAngle = Math.acos(projectileLocalCoordinates[2])
-	if (projectileLocalPolarAngle > bug.arcLength) {
+	if (projectileLocalPolarAngle >= bug.arcLength) {
 		return false
 	}
 	return true
@@ -118,4 +120,27 @@ function transitionText(element, target, duration = 400) {
 	}, duration / steps)
 	
 	return interval
+}
+
+/**
+ * Creates the inverse of a perspective projection matrix.
+ *
+ * @param {number} fovy - The field of view in the y direction, in degrees.
+ * @param {number} aspect - The aspect ratio (width/height) of the viewport.
+ * @param {number} near - The distance to the near clipping plane.
+ * @param {number} far - The distance to the far clipping plane.
+ * @returns {number[][]} The inverse of a 4x4 perspective projection matrix.
+ */
+function inversePerspective(fovy, aspect, near, far) {
+	fovy *= 2 * Math.PI / 360
+	const f = 1 / Math.tan(fovy / 2)
+
+	const invertedPerspective = mat4()
+	invertedPerspective[0][0] = aspect / f
+	invertedPerspective[1][1] = 1 / f
+	invertedPerspective[2][3] = -1
+	invertedPerspective[3][2] = (near - far) / (2 * far * near)
+	invertedPerspective[3][3] = (near + far) / (2 * far * near)
+
+	return invertedPerspective
 }

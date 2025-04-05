@@ -21,7 +21,7 @@
 </head>
 <body>
 	<!-- canvas element for rendering. -->
-	<canvas id="gl-canvas" width="1920px" height="1080px"></canvas>
+	<canvas id="gl-canvas" height="1080" width="1920"></canvas>
 
 	<!-- all of the `lib` scripts I used. -->
 	<script src="lib/MV.js"></script>
@@ -36,7 +36,7 @@
 	<script src="util/sphere.js"></script>
 	<script src="util/initShaderProgram.js"></script>
 	<script src="util/renderScene.js"></script>
-	<script src="util/rectangle.js"></script>
+	<script src="util/Projectile.js"></script>
 	<script src="util/GameState.js"></script>
 	<script src="util/ui.js"></script>
 	<script src="util/misc.js"></script>
@@ -86,7 +86,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Mouse Sensitivity</td>
+				<td>Mouse Sensitivity when rotating the sphere.</td>
 				<td>
 					<input
 						class="slider"
@@ -116,10 +116,15 @@
 				at an increasing rate. While below this threshold, more survivors can be found. Your objective is
 				to rescue as many survivors as possible.
 			</p>
-			<p>
-				Once the survivors have been evacuated, you will be free to purge the planet of any remaining
-				invaders without regard for collateral damage.
-			</p>
+
+			Note the following:
+
+			<ul>
+				<li>Firing the cannon excessively may cause it to <strong>OVERHEAT</strong>. When this
+					happens, you must wait until it is completely cooled before you can fire it again.</li>
+				<li><strong>OVERDRIVE</strong> can be used to instantly and completely cool the cannon
+					and briefly override temporal inhibitors.</li>
+			</ul>
 			
 			<h1>CONTROLS</h1>
 
@@ -189,6 +194,10 @@
 	</div>
 
 	<div class="progress-bars">
+		<div class="progress-bar" id="heat-progress-bar">
+			<div class="progress-bar-inner"></div>
+			<span class="progress-bar-text" id="heat-text"></span>
+		</div>
 		<div class="progress-bar" id="overdrive-progress-bar">
 			<div class="progress-bar-inner"></div>
 			<span class="progress-bar-text" id="overdrive-text"></span>
@@ -206,7 +215,5 @@
 	<div id="time-remaining" class="text-display">
 		<span id="time-remaining-display"></span>
 	</div>
-
-	<img id="crosshairs" src="img/crosshairs.png" />
 </body>
 </html>

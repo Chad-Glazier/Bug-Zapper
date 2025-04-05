@@ -17,9 +17,9 @@
 	border-radius: 15px;
 	background-color: rgba(0, 0, 0, 0.2);
 	color: white;
-	padding: 10px;
+	padding: 1rem;
 
-	font-size: 1.5rem;
+	font-size: 1.2rem;
 }
 
 #settings-return-button {
@@ -43,7 +43,7 @@
 	align-items: center;
 	justify-content: space-between;
 
-	width: min(var(--settings-width), 250px);
+	width: min(var(--settings-width), 200px);
 	margin: 1rem auto;
 }
 
@@ -53,7 +53,8 @@
 }
 
 #difficulty-carousel .arrow-button:hover {
-	cursor: pointer;
+	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
+
 }
 
 #difficulty-text {

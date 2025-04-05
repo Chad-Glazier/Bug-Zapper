@@ -20,11 +20,18 @@ function sphere(divisions, options = {
 	scaleDivisions: true
 }) {
 	// Set the defaults.
-	let { radialDistance, azimuthalInterval, polarInterval, scaleDivisions } = options
+	let { 
+		radialDistance, 
+		azimuthalInterval, 
+		polarInterval, 
+		scaleDivisions, 
+		isCone 
+	} = options
 	radialDistance ??= 1
 	azimuthalInterval ??= [0, 2 * Math.PI]
 	polarInterval ??= [0, Math.PI]
 	scaleDivisions ??= true
+	isCone ??= false
 
 	// clamp the intervals, we don't need to make unnecessary vertices.
 	let azimuthalIntervalWidth = Math.abs(azimuthalInterval[0] - azimuthalInterval[1])
@@ -148,6 +155,16 @@ function sphere(divisions, options = {
 			[topLeftCorner, topRightCorner, bottomLeftCorner],
 			[bottomLeftCorner, bottomRightCorner, topRightCorner]
 		)
+	}
+	
+	if (isCone) {
+		points.push([0, 0, 0])
+		const originIdx = points.length - 1
+
+		// start a loop from where we left off
+		for (let vertexIndex = points.length - azimuthalDivisions - 1; vertexIndex < points.length - 1; vertexIndex++) {
+			triangles.push([vertexIndex, vertexIndex + 1, originIdx])
+		}
 	}
 
 	// Finally, we have flatten the arrays and return them.

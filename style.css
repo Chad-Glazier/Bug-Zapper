@@ -17,6 +17,7 @@ body {
 	margin: 0;
 	font-family: 'Space Mono', monospace;
 	--greeen: rgb(126, 252, 130);
+	cursor: url(img/crosshairs_cursor.png) 17.5 17.5, auto;
 }
 
 
@@ -36,7 +37,8 @@ button {
 }
 
 button:hover {
-	cursor: pointer;
+	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
+
 	color: var(--greeen);
 }
 
@@ -51,21 +53,6 @@ button:hover {
 
 #coverage-display::before {
 	content: 'COVERAGE'
-}
-
-
-/*
-	styles/crosshairs.css
-*/
-#crosshairs {
-	--length: 2rem;
-	position: fixed;
-	width: var(--length);
-	height: var(--length);
-	top: calc(50vh - var(--length) / 2); 
-	left: calc(50vw - var(--length) / 2);
-	z-index: 1;
-	pointer-events: none;
 }
 
 
@@ -176,7 +163,8 @@ button:hover {
 }
 
 .key:hover {
-	cursor: pointer;
+	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
+
 	top: 2px;
 	color: var(--greeen);
 }
@@ -278,6 +266,13 @@ button:hover {
 	--caption-color: var(--inner-color);
 	--caption: 'Overdrive';
 	--progress: 0.1;
+}
+
+#heat-progress-bar {
+	--inner-color: rgb(74, 216, 255);
+	--caption-color: var(--inner-color);
+	--caption: 'Cannon Temperature';
+	--progress: 0.0;
 }
 
 .progress-bar {
@@ -386,9 +381,9 @@ button:hover {
 	border-radius: 15px;
 	background-color: rgba(0, 0, 0, 0.2);
 	color: white;
-	padding: 10px;
+	padding: 1rem;
 
-	font-size: 1.5rem;
+	font-size: 1.2rem;
 }
 
 #settings-return-button {
@@ -412,7 +407,7 @@ button:hover {
 	align-items: center;
 	justify-content: space-between;
 
-	width: min(var(--settings-width), 250px);
+	width: min(var(--settings-width), 200px);
 	margin: 1rem auto;
 }
 
@@ -422,7 +417,8 @@ button:hover {
 }
 
 #difficulty-carousel .arrow-button:hover {
-	cursor: pointer;
+	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
+
 }
 
 #difficulty-text {

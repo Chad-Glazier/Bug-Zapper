@@ -84,9 +84,11 @@ function main() {
 	const timeRemaining = document.getElementById("time-remaining-display")
 	const difficultyText = document.getElementById("difficulty-text")
 	const overdriveText = document.getElementById("overdrive-text")
+	const heatText = document.getElementById("heat-text")
 	// progress bars
 	const survivorBar = document.getElementById("survivor-progress-bar")
 	const overdriveBar = document.getElementById("overdrive-progress-bar")
+	const heatBar = document.getElementById("heat-progress-bar")
 	// slider inputs
 	const mouseSensitivitySlider = document.getElementById("mouse-sensitivity-range")
 	const keySensitivitySlider = document.getElementById("key-sensitivity-range")
@@ -113,6 +115,8 @@ function main() {
 		|| overdriveText == null
 		|| keySensitivitySlider == null 
 		|| mouseSensitivitySlider == null
+		|| heatBar == null
+		|| heatText == null
 	) {
 		console.error(`One or more necessary elements were not found when setting up the UI.`)
 		return
@@ -144,11 +148,13 @@ function main() {
 				coverage: coverageDisplay,
 				timeRemaining: timeRemaining,
 				difficulty: difficultyText,
-				overdrive: overdriveText
+				overdrive: overdriveText,
+				heat: heatText
 			},
 			progressBar: { 
 				survivor: survivorBar,
-				overdrive: overdriveBar
+				overdrive: overdriveBar,
+				heat: heatBar
 			},
 			input: {
 				mouseSensitivity: mouseSensitivitySlider,
@@ -197,11 +203,13 @@ function main() {
 		initialSurvivorCount: 10000, 	// 10K initial survivors.
 		baseSphereRadius: 1,
 		startingDistance: 5,
-		maxDistance: 20,
+		maxDistance: 10,
 		minDistance: 3,
 		refreshRate: 60,
 		frictionCoefficient: 0.35,
-		projectileSpeed: 10,
+		heatPerShot: 0.04,
+		coolingRate: 0.15,
+		projectileSpeed: 15,
 		bugGrowthRate: Math.PI / 72,
 		bugDeathRate: Math.PI / 2,
 		scoreSettings: {
@@ -213,9 +221,9 @@ function main() {
 		bugElevationGap: 0.0032,
 		enableInertia: true,
 		bugSpawnFrequency: 0.65,
-		cannonCooldown: 0.1,
+		cannonCooldown: 0.10,
 		dragRotationSensitivity: 1.0,
-		keyRotationRPM: 12,
+		keyRotationRPM: 20,
 		bugCapacity: 8,
 		difficultyModifiers: {
 			easy: 1,
@@ -248,6 +256,7 @@ function main() {
 	game.on("overdrivecharge", ({ overdriveCharge }) => {
 		ui.overdriveChargeProgress = overdriveCharge
 	})
+	game.on("heat", ({ heat }) => ui.heatProgress = heat)
 
 	//
 	// Set up some controls.
@@ -324,14 +333,39 @@ function main() {
 
 	enableKeyRotationControls(game)
 
+	/** @type {[x: number, y: number]} */
+	let mousePosition = [0, 0]
+	window.addEventListener("mousemove", ({ clientX, clientY }) => {
+		mousePosition = [clientX, clientY]
+	})
+
+	let  firingInterval = NaN
+
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key !== " ") return
 		if (game.isPaused) return
 
-		game.launchProjectile()
-
 		ev.preventDefault()
+
+		if (!Number.isNaN(firingInterval)) return
+
+		game.launchProjectile(
+			game.projectGameCoordinates(mousePosition)
+		)
+
+		firingInterval = setInterval(() => {
+			game.launchProjectile(
+				game.projectGameCoordinates(mousePosition)
+			)
+		}, game.config.cannonCooldown)
 	})
+
+	window.addEventListener("keyup", (ev) => {
+		if (ev.key !== " ") return
+
+		clearInterval(firingInterval)
+		firingInterval = NaN
+ 	})
 
 	window.addEventListener("keydown", (ev) => {
 		if (ev.key !== "f") return
@@ -417,17 +451,16 @@ function enableMouseDrag(game) {
 	let lastRPM = 0
 	let lastAxis = [0, 0, 0]
 
-	canvas.addEventListener("mousedown", ({ clientX, clientY }) => {
+	canvas.addEventListener("mousedown", () => {
 		if (game.isPaused) return
 
 		dragging = true
-		initialPosition = [clientX, clientY]
 		initialTime = Date.now()
 
 		game.setMomentum([0, 0, 1], 0)
 	})
 	
-	canvas.addEventListener("mousemove", ({ clientX, clientY}) => {
+	canvas.addEventListener("mousemove", ({ movementX, movementY }) => {
 		if (game.isPaused) return
 		if (!dragging) return
 
@@ -436,8 +469,8 @@ function enableMouseDrag(game) {
 		// We calculate the displacement of the mouse.
 		const [initialX, initialY] = initialPosition
 		const [deltaX, deltaY] = [
-			clientX - initialX,
-			-1 * (clientY - initialY)
+			movementX,
+			-1 * movementY
 		]
 		const magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 		if (magnitude === 0) return
@@ -461,7 +494,6 @@ function enableMouseDrag(game) {
 		lastAxis = axisOfRotation
 		lastRPM = rotations / minutes
 		if (lastRPM == Infinity) lastRPM = 0
-		initialPosition = [clientX, clientY]
 		initialTime = Date.now()
 	})
 
@@ -541,7 +573,10 @@ function enableKeyRotationControls(game) {
 
 	window.addEventListener("keydown", ({ key }) => {
 		if (game.isPaused) return
-		if (activeKeyRotationEvents.has(key)) return
+		if (activeKeyRotationEvents.has(key)) {
+			
+			return
+		}
 
 		game.setInertia([0, 0, 1], 0)
 

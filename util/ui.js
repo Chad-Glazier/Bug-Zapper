@@ -1,5 +1,6 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
+/// <reference path="./misc.js" />
 /// <reference path="../constants.js" />
 
 /**
@@ -84,6 +85,41 @@ class UI {
 			"--progress",
 			newProgress.toString()
 		)
+	}
+
+	/**
+	 * Sets the temperature on the heat progress bar in the UI.
+	 * 
+	 * @param {number} newProgress A number from `0` to `1` representing the
+	 * percentage of the progress bar to fill.
+	 */
+	set heatProgress(newProgress) {
+		let hotColor = normalize([255, 100, 0])
+		let coolColor = normalize([255, 255, 153])
+
+		let proportionalHot = hotColor.map(x => x * newProgress)
+		let proportionalCool = coolColor.map(x => x * (1 - newProgress))
+		let color = proportionalHot.map((_, i) => {
+			return proportionalHot[i] + proportionalCool[i]
+		})
+		color = normalize(color)
+		color = color.map(x => x * 255 * 1.5)
+
+		this.element.progressBar.heat.style.setProperty(
+			"--progress",
+			newProgress.toString()
+		)
+		this.element.progressBar.heat.style.setProperty(
+			"--inner-color",
+			`rgb(${color[0]}, ${color[1]}, ${color[2]})`
+		)
+
+		if (newProgress >= 1) {
+			this.element.textDisplay.heat.innerText = `OVERHEATED`
+		} 
+		if (newProgress == 0) {
+			this.element.textDisplay.heat.innerText = ""
+		}
 	}
 
 	/**

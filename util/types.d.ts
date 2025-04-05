@@ -96,6 +96,13 @@ declare type SphereOptions = {
 	 * shapes proportionally.
 	 */
 	scaleDivisions?: boolean
+
+	/**
+	 * If specified, the bottom-most set of vertices will be connected to the
+	 * origin. When making a sphere with a less-than-full polar interval, this
+	 * will make it look like a cone instead of a cap. 
+	 */
+	isCone?: boolean
 }
 
 declare type Bug = {
@@ -118,30 +125,6 @@ declare type Bug = {
 	spawnTime: number
 }
 
-declare type Projectile = {
-	/**
-	 * A (fixed) axis, calculated by the rotation at the time of firing, that
-	 * determines the line along which the projectile will travel.
-	 * 
-	 * The line between this axis and the origin defines the trajectory of the
-	 * projectile.
-	 */
-	relativeAxis: number[]
-
-	/**
-	 * The distance between the projectile and the origin
-	 */
-	radialDistance: number
-
-	sizeFactor?: number
-	isNuke?: boolean
-}
-
-declare type Rectangle = {
-	vertices: Float32Array
-	indices: Uint16Array
-}
-
 declare type DyingBug = Bug & {
 	deathTime: number
 	innerArcLength: number
@@ -154,6 +137,8 @@ declare type GameDifficulty =
 	| "apocalypse"
 
 declare type GameOptions = {
+	coolingRate: number
+	heatPerShot: number
 	overdriveDuration: number
 	overdriveTemporalModifier: number
 	overdriveCooldown: number
@@ -199,6 +184,7 @@ declare type GameEvent = {
 	survivors: number
 	timeRemaining: number
 	overdriveCharge: number
+	heat: number
 }
 
 declare type GameEventType = 
@@ -211,6 +197,7 @@ declare type GameEventType =
 	| "overdrivecharge"
 	| "activateoverdrive"
 	| "deactivateoverdrive"
+	| "heat"
 
 declare type ScoreSettings = {
 	missedShot: number
@@ -250,10 +237,12 @@ declare type UIMapping = {
 		timeRemaining: HTMLElement
 		difficulty: HTMLElement
 		overdrive: HTMLElement
+		heat: HTMLElement
 	}
 	progressBar: {
 		survivor: HTMLElement
 		overdrive: HTMLElement
+		heat: HTMLElement
 	}
 	input: {
 		keySensitivity: HTMLElement

@@ -3,4 +3,5 @@ body {
 	margin: 0;
 	font-family: 'Space Mono', monospace;
 	--greeen: rgb(126, 252, 130);
+	cursor: url(img/crosshairs_cursor.png) 17.5 17.5, auto;
 }

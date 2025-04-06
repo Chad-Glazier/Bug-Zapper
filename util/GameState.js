@@ -5,7 +5,7 @@
 
 /**
  * Instances of this class store the state of a game. Methods are included to
- * advance the state of the game and render it in the grapics context.
+ * advance the state of the game and render it in the graphics context.
  */
 class GameState {
 	/**
@@ -48,7 +48,7 @@ class GameState {
 		this.currentHeat = 0
 
 		/**
-		 * The (living) bugs in the game.
+		 * The living bugs in the game.
 		 *
 		 * @private
 		 * @type {Bug[]}
@@ -56,7 +56,7 @@ class GameState {
 		this.bugs = []
 
 		/**
-		 * The (dying) bugs in the game.
+		 * The dying bugs in the game.
 		 *
 		 * @private
 		 * @type {DyingBug[]}
@@ -70,14 +70,6 @@ class GameState {
 		 * @type {Projectile[]}
 		 */
 		this.projectiles = []
-
-		/**
-		 * The base sphere for the game. This is the sphere at the "center"
-		 * where the bugs spawn.
-		 *
-		 * @private
-		 * @type {Sphere}
-		 */
 
 		/**
 		 * The rotation matrix that defines the orientation of the game
@@ -109,7 +101,7 @@ class GameState {
 		/**
 		 * Stores the rotational momentum of the sphere. Note that momentum
 		 * is fixed until it is otherwise changed, as opposed to the sphere's
-		 * `inertia` which decreases over time as a function of friction.)
+		 * `inertia` which decreases over time as a function of friction.
 		 *
 		 * @private
 		 * @type {{ axis: number[], rpm: number }}
@@ -144,7 +136,7 @@ class GameState {
 		this.score = 0
 
 		/**
-		 * Stores the (game) time when the last bug was spawned.
+		 * Stores the in-game time when the last bug was spawned.
 		 *
 		 * @private
 		 * @type {number}
@@ -314,8 +306,8 @@ class GameState {
 	 * Projects pixel coordinates onto a plane in-game.
 	 *
 	 * @param {[x: number, y: number]} position The coordinates that you want
-	 * to convert from pixel coordinates (e.g., `event.clientX`, ...) to in-
-	 * game coordinates.
+	 * to convert from pixel coordinates (e.g., `[event.clientX, event.clientY]`) 
+	 * to in-game coordinates.
 	 *
 	 * @returns {[x: number, y: number, z: number]} The x- and y- coordinates
 	 * mapped onto the `z = 0` plane.
@@ -430,8 +422,8 @@ class GameState {
 			this.handleEvent("deactivateoverdrive")
 		}
 
-		// This produces a modifier for the bug spawn frequency and growth rate
-		// based on the temporal progress and difficulty setting.
+		// Create some modifiers for certain "difficulty" values based on the
+		// progress and game difficulty setting.
 		const timeFactor = this.time / this.config.timeLimit
 		const difficultyFactor = this.difficultyModifier
 		const bugGrowthRateModifier = Math.min(
@@ -467,6 +459,7 @@ class GameState {
 			}
 		}
 
+		// Check if all survivors are lost.
 		if (Math.round(this.survivorCount) <= 0) {
 			this.handleEvent("gamelose")
 		}
@@ -522,7 +515,7 @@ class GameState {
 			let bugColor = [Math.random(), Math.random(), Math.random()]
 			// all bugs will be equally "bright." This keeps them from blending into the sphere.
 			bugColor = normalize(bugColor)
-			bugColor.push(1)
+			bugColor.push(1) // opacity
 			this.bugs.push({
 				rotationMatrix: bugRotation,
 				arcLength: 0,
@@ -1016,15 +1009,19 @@ class GameState {
 		return this.config.dragRotationSensitivity
 	}
 
+	/**
+	 * How fast (in rotations per minute) the sphere should rotate when
+	 * pressing a rotation key.
+	 */
 	get keySensitivity() {
 		return this.config.keyRotationRPM
 	}
 
 	/**
 	 * The calculated coverage of the sphere. I.e., the ratio of the total
-	 * surface area of the bugs to the surface area of the base sphere,  up
+	 * surface area of the bugs to the surface area of the base sphere, up
 	 * to a maximum of `1.0`.
-	 *
+	 * 
 	 * @public
 	 */
 	get coverage() {
@@ -1058,7 +1055,7 @@ class GameState {
 	}
 
 	/**
-	 * Gets the difficulty modifier.
+	 * The difficulty modifier.
 	 *
 	 * @private
 	 */

@@ -18,11 +18,11 @@ class Projectile {
 		targetPoint,
 		speed,
 		length,
-		height, // room for improvement: add options.
+		height,
 		isNuke = false,
 	) {
 		/**
-		 * The previous center.
+		 * The center of the rectangle before the most recent time advancement.
 		 *
 		 * @type {number[]}
 		 * @private
@@ -67,6 +67,10 @@ class Projectile {
 		// to think about the rectangle we're making.
 		const forwards = this.direction.map((x) => x * length / 2)
 		const backwards = forwards.map((x) => -x)
+		// We need a vector orthogonal to the forwards/backwards direction.
+		// Per the hairy ball theorem (https://en.wikipedia.org/wiki/Hairy_ball_theorem)
+		// there is no continuous function that gives us such a vector. So, 
+		// we use this ugly piecewise function to find it instead.
 		const up = this.direction[0] == 0 && this.direction[1] == 0
 			? [height / 2, 0, 0]
 			: normalize(cross(forwards, [0, 0, 1])).map((x) => x * height / 2)
@@ -145,6 +149,8 @@ class Projectile {
 	}
 
 	/**
+	 * The center of the rectangle before the most recent time advancement.
+	 * 
 	 * @returns {number[]}
 	 */
 	get previousPosition() {
@@ -152,6 +158,8 @@ class Projectile {
 	}
 
 	/**
+	 * The center of the rectangle.
+	 * 
 	 * @returns {number[]}
 	 */
 	get position() {

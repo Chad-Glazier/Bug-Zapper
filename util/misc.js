@@ -4,14 +4,15 @@
 /// <reference path="./Projectile.js" />
 
 /**
- * Determines whether or not a projectile's center is within a bug's region, or
+ * Determines whether or not a projectile's center is within a bug's region or
  * just passed through it.
  *
  * @param {number} baseSphereRadius
  * @param {Projectile} projectile
  * @param {Bug} bug
- * @returns {boolean} `true` if the bug is in the projectile's path, and
- * `false` otherwise.
+ * @returns {boolean} `true` if the bug is in the projectile's path or was in
+ * its path at some point during the most recent time step. Returns `false`
+ * otherwise.
  */
 function collided(baseSphereRadius, projectile, bug) {
 	// Note: we ignore the azimuthal coordinates because the bugs have full
@@ -195,10 +196,10 @@ function transitionText(element, target, duration = 400) {
 /**
  * Creates the inverse of a perspective projection matrix.
  *
- * @param {number} fovy - The field of view in the y direction, in degrees.
- * @param {number} aspect - The aspect ratio (width/height) of the viewport.
- * @param {number} near - The distance to the near clipping plane.
- * @param {number} far - The distance to the far clipping plane.
+ * @param {number} fovy The field of view in the y direction, in degrees.
+ * @param {number} aspect The aspect ratio (width/height) of the viewport.
+ * @param {number} near The distance to the near clipping plane.
+ * @param {number} far The distance to the far clipping plane.
  * @returns {number[][]} The inverse of a 4x4 perspective projection matrix.
  */
 function inversePerspective(fovy, aspect, near, far) {

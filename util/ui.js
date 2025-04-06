@@ -4,7 +4,9 @@
 /// <reference path="../constants.js" />
 
 /**
- * This class is meant to encapsulate the HTML user interface. It's meant to
+ * This class is meant to encapsulate some methods to interact with the HTML
+ * user interface. It contains methods to hide/reveal menus, update displayed
+ * text and progress bars, etc.
  */
 class UI {
 	/**

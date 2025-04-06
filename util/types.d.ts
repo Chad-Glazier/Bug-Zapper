@@ -198,6 +198,8 @@ declare type GameEventType =
 	| "activateoverdrive"
 	| "deactivateoverdrive"
 	| "heat"
+	| "gamewin"
+	| "gamelose"
 
 declare type ScoreSettings = {
 	missedShot: number
@@ -219,6 +221,8 @@ declare type UIMapping = {
 	}
 	informationCard: {
 		instructions: HTMLElement
+		winSummary: HTMLElement
+		loseScreen: HTMLElement
 	}
 	button: {
 		instructions: HTMLElement
@@ -229,6 +233,8 @@ declare type UIMapping = {
 		instructionsReturn: HTMLElement
 		settingsReturn: HTMLElement
 		settings: HTMLElement
+		winSummaryReturn: HTMLElement
+		loseScreenReturn: HTMLElement
 	}
 	textDisplay: {
 		score: HTMLElement
@@ -238,6 +244,8 @@ declare type UIMapping = {
 		difficulty: HTMLElement
 		overdrive: HTMLElement
 		heat: HTMLElement
+		summarySurvivor: HTMLElement
+		summaryDifficulty: HTMLElement
 	}
 	progressBar: {
 		survivor: HTMLElement
@@ -248,6 +256,7 @@ declare type UIMapping = {
 		keySensitivity: HTMLElement
 		mouseSensitivity: HTMLElement
 	}
+	notification: Record<UINotificationType, HTMLElement>
 }
 
 declare type StyleProperty = [property: string, value: string]
@@ -265,6 +274,14 @@ declare type ConditionalStyleProperties = {
 		hidden: StyleProperty[]
 		shown: StyleProperty[]
 	}
+	winSummary: {
+		hidden: StyleProperty[]
+		shown: StyleProperty[]
+	}
+	loseScreen: {
+		hidden: StyleProperty[]
+		shown: StyleProperty[]
+	}
 }
 
 declare type UIEventType =
@@ -275,3 +292,8 @@ declare type UIEventType =
 	| "resumebutton"
 	| "decreasedifficultybutton"
 	| "increasedifficultybutton"
+
+declare type UINotificationType =
+	| "overdriveready"
+	| "nukeready"
+	| "overheated"

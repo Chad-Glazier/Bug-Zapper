@@ -1,4 +1,6 @@
 #instructions {
+	box-sizing: border-box;
+
 	--info-panel-width: clamp(400px, 70%, 750px);
 	--info-panel-height: clamp(400px, 80%, 700px);
 	width: var(--info-panel-width);
@@ -15,7 +17,7 @@
 	border: 2px solid;
 	border-color: var(--greeen);
 	border-radius: 15px;
-	background-color: rgba(0, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.3);
 	color: white;
 	padding: 10px;
 }

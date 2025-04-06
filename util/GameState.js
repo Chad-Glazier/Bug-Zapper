@@ -467,6 +467,10 @@ class GameState {
 			}
 		}
 
+		if (Math.round(this.survivorCount) <= 0) {
+			this.handleEvent("gamelose")
+		}
+
 		// Calculate rotation based on the current rotational momentum.
 		let newRotation = rotate(
 			360 * this.momentum.rpm * real.minutes,
@@ -531,11 +535,7 @@ class GameState {
 		// Grow the bugs and set their elevation to avoid overlap.
 		this.bugs = this.bugs.map((bug, i) => {
 			const increment = bugGrowthRate * bugGrowthRateModifier * seconds
-			if (bug.arcLength + increment <= Math.PI) {
-				bug.arcLength += increment
-			} else {
-				bug.arcLength = Math.PI
-			}
+			bug.arcLength = Math.min(Math.PI, bug.arcLength + increment)
 			bug.elevation = (i + 1) * bugElevationGap
 			return bug
 		})
@@ -583,15 +583,15 @@ class GameState {
 
 			// Find any bugs in the collision course.
 			const bugsInCollisionCourse = this.bugs.filter((bug) => {
-				const withinDistance =
-					dist <= this.config.baseSphereRadius + bug.elevation
-				const onCollisionCourse = willCollide(projectile, bug)
-				return withinDistance && onCollisionCourse
+				return collided(
+					this.config.baseSphereRadius,
+					projectile,
+					bug,
+				)
 			})
 
 			// Handle the miss case.
 			if (bugsInCollisionCourse.length == 0) {
-				this.score += this.config.scoreSettings.missedShot
 				continue
 			}
 
@@ -619,6 +619,9 @@ class GameState {
 		this.projectiles = this.projectiles.filter(({ radialDistance }) => {
 			const inBounds = radialDistance < 1.2 * this.config.maxDistance
 			const outsideSphere = radialDistance > this.config.baseSphereRadius
+			if (!inBounds || !outsideSphere) {
+				this.score += this.config.scoreSettings.missedShot
+			}
 			return inBounds && outsideSphere
 		})
 
@@ -975,6 +978,10 @@ class GameState {
 				true,
 			),
 		)
+
+		setTimeout(() => {
+			this.handleEvent("gamewin")
+		}, 1000)
 	}
 
 	/**

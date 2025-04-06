@@ -67,6 +67,8 @@ function main() {
 	const settingsMenu = document.getElementById("settings")
 	// information cards
 	const instructions = document.getElementById("instructions")
+	const winSummary = document.getElementById("win-screen")
+	const loseScreen = document.getElementById("lose-screen")
 	// buttons
 	const playButton = document.getElementById("play-button")
 	const restartButton = document.getElementById("restart-button")
@@ -84,6 +86,12 @@ function main() {
 		"decrease-difficulty-button",
 	)
 	const settingsButton = document.getElementById("settings-button")
+	const winSummaryReturn = document.getElementById(
+		"win-screen-return-button",
+	)
+	const loseScreenReturn = document.getElementById(
+		"lose-screen-return-button",
+	)
 	// text displays
 	const scoreDisplay = document.getElementById("score-display")
 	const survivorDisplay = document.getElementById("survivor-display")
@@ -92,6 +100,10 @@ function main() {
 	const difficultyText = document.getElementById("difficulty-text")
 	const overdriveText = document.getElementById("overdrive-text")
 	const heatText = document.getElementById("heat-text")
+	const summarySurvivorCount = document.getElementById(
+		"summary-survivor-count",
+	)
+	const summaryDifficulty = document.getElementById("summary-difficulty")
 	// progress bars
 	const survivorBar = document.getElementById("survivor-progress-bar")
 	const overdriveBar = document.getElementById("overdrive-progress-bar")
@@ -102,6 +114,16 @@ function main() {
 	)
 	const keySensitivitySlider = document.getElementById(
 		"key-sensitivity-range",
+	)
+	// notifications
+	const overheatedNotification = document.getElementById(
+		"overheated-notification",
+	)
+	const overdriveReadyNotification = document.getElementById(
+		"overdrive-ready-notification",
+	)
+	const nukeReadyNotification = document.getElementById(
+		"nuke-ready-notification",
 	)
 
 	if (
@@ -127,7 +149,16 @@ function main() {
 		keySensitivitySlider == null ||
 		mouseSensitivitySlider == null ||
 		heatBar == null ||
-		heatText == null
+		heatText == null ||
+		overheatedNotification == null ||
+		overdriveReadyNotification == null ||
+		nukeReadyNotification == null ||
+		winSummary == null ||
+		winSummaryReturn == null ||
+		summaryDifficulty == null ||
+		summarySurvivorCount == null ||
+		loseScreen == null ||
+		loseScreenReturn == null
 	) {
 		console.error(
 			`One or more necessary elements were not found when setting up the UI.`,
@@ -144,6 +175,8 @@ function main() {
 			},
 			informationCard: {
 				instructions: instructions,
+				winSummary: winSummary,
+				loseScreen: loseScreen,
 			},
 			button: {
 				play: playButton,
@@ -154,6 +187,8 @@ function main() {
 				instructionsReturn: instructionsReturnButton,
 				settingsReturn: settingsReturnButton,
 				settings: settingsButton,
+				winSummaryReturn: winSummaryReturn,
+				loseScreenReturn: loseScreenReturn,
 			},
 			textDisplay: {
 				score: scoreDisplay,
@@ -163,6 +198,8 @@ function main() {
 				difficulty: difficultyText,
 				overdrive: overdriveText,
 				heat: heatText,
+				summaryDifficulty: summaryDifficulty,
+				summarySurvivor: summarySurvivorCount,
 			},
 			progressBar: {
 				survivor: survivorBar,
@@ -172,6 +209,11 @@ function main() {
 			input: {
 				mouseSensitivity: mouseSensitivitySlider,
 				keySensitivity: keySensitivitySlider,
+			},
+			notification: {
+				"nukeready": nukeReadyNotification,
+				"overdriveready": overdriveReadyNotification,
+				"overheated": overheatedNotification,
 			},
 		},
 		{
@@ -197,6 +239,22 @@ function main() {
 				],
 				shown: [
 					["top", "calc(50vh - var(--settings-height) / 2)"],
+				],
+			},
+			winSummary: {
+				hidden: [
+					["top", "calc(100vh + 50px)"],
+				],
+				shown: [
+					["top", "calc(50vh - var(--win-screen-height) / 2)"],
+				],
+			},
+			loseScreen: {
+				hidden: [
+					["top", "calc(100vh + 50px)"],
+				],
+				shown: [
+					["top", "calc(50vh - var(--lose-screen-height) / 2)"],
 				],
 			},
 		},
@@ -265,14 +323,48 @@ function main() {
 		ui.survivorCountProgress = survivors / game.config.initialSurvivorCount
 		ui.survivorCountNumber = survivors
 	})
-	game.on(
-		"timeremaining",
-		({ timeRemaining }) => ui.timeRemaining = timeRemaining,
-	)
+	let notifiedAboutNuke = false
+	game.on("timeremaining", ({ timeRemaining }) => {
+		ui.timeRemaining = timeRemaining
+
+		if (timeRemaining <= 0 && !notifiedAboutNuke) {
+			ui.showNotification("nukeready")
+			notifiedAboutNuke = true
+		}
+	})
+	let notifiedAboutOverdrive = false
 	game.on("overdrivecharge", ({ overdriveCharge }) => {
 		ui.overdriveChargeProgress = overdriveCharge
+
+		if (overdriveCharge >= 1 && !notifiedAboutOverdrive) {
+			ui.showNotification("overdriveready")
+			notifiedAboutOverdrive = true
+
+			setTimeout(() => {
+				ui.hideNotification("overdriveready")
+			}, 5000)
+		} else {
+			ui.hideNotification("overdriveready")
+			notifiedAboutOverdrive = false
+		}
 	})
-	game.on("heat", ({ heat }) => ui.heatProgress = heat)
+	game.on("heat", ({ heat }) => {
+		ui.heatProgress = heat
+
+		if (heat >= 1) ui.showNotification("overheated")
+		if (heat <= 0) ui.hideNotification("overheated")
+	})
+	let gameOver = false
+	game.on("gamewin", ({ survivors }) => {
+		game.pause()
+		ui.showWinSummary(survivors, game.difficultySetting)
+		gameOver = true
+	})
+	game.on("gamelose", () => {
+		game.pause()
+		ui.showLoseScreen()
+		gameOver = true
+	})
 
 	//
 	// Set up some controls.
@@ -307,10 +399,23 @@ function main() {
 			ui.hidePauseMenu(() => game.unpause())
 			return
 		}
+
+		if (ui.winSummaryVisible) {
+			ui.hideWinSummary(() => ui.showPauseMenu())
+		}
+
+		if (ui.loseScreenVisible) {
+			ui.hideLoseScreen(() => ui.showPauseMenu())
+		}
 	})
 
 	ui.element.button.play.addEventListener("click", () => {
 		if (!game.isPaused) {
+			return
+		}
+
+		if (gameOver) {
+			ui.element.button.restart.dispatchEvent(new Event("click"))
 			return
 		}
 
@@ -321,6 +426,14 @@ function main() {
 		ui.hideInstructions(() => ui.showPauseMenu())
 	})
 
+	ui.element.button.loseScreenReturn.addEventListener("click", () => {
+		ui.hideLoseScreen(() => ui.showPauseMenu())
+	})
+
+	ui.element.button.winSummaryReturn.addEventListener("click", () => {
+		ui.hideWinSummary(() => ui.showPauseMenu())
+	})
+
 	ui.element.button.settingsReturn.addEventListener("click", () => {
 		ui.hideSettings(() => ui.showPauseMenu())
 	})
@@ -329,6 +442,13 @@ function main() {
 		game.restart()
 		game.pause()
 		ui.hidePauseMenu(() => game.unpause())
+
+		notifiedAboutNuke = false
+		notifiedAboutOverdrive = false
+		gameOver = false
+		ui.hideNotification("nukeready")
+		ui.hideNotification("overdriveready")
+		ui.hideNotification("overheated")
 	})
 
 	ui.element.button.instructions.addEventListener("click", () => {
@@ -387,6 +507,7 @@ function main() {
 		if (ev.key !== "f") return
 
 		game.launchNuke()
+		ui.hideNotification("nukeready")
 	})
 
 	ui.element.button.decreaseDifficulty.addEventListener("click", () => {

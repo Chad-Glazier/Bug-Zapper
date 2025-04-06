@@ -47,8 +47,16 @@ class UI {
 		this.pauseMenuShown = false
 		/** @private @type {boolean} */
 		this.settingsShown = false
+		/** @private @type {boolean} */
+		this.winSummaryShown = false
+		/** @private @type {boolean} */
+		this.loseScreenShown = false
 
+		/** @private @type {number} */
 		this.difficultyTextChangeInterval = NaN
+
+		/** @private @type {Set<UINotificationType>} */
+		this.notifications = new Set()
 	}
 
 	/**
@@ -68,7 +76,9 @@ class UI {
 	 * @param {number} newSurvivorCount The updated survivor count to display.
 	 */
 	set survivorCountNumber(newSurvivorCount) {
-		this.element.textDisplay.survivor.textContent = Math.round(newSurvivorCount)
+		this.element.textDisplay.survivor.textContent = Math.round(
+			newSurvivorCount,
+		)
 			.toString()
 	}
 
@@ -290,6 +300,88 @@ class UI {
 		this.settingsShown = true
 	}
 
+	/**
+	 * @param {(() => void) | null} uponCompletion An optional callback
+	 * function that will be executed when the animation finishes.
+	 */
+	hideWinSummary(uponCompletion = null) {
+		this.applyStyles(
+			this.element.informationCard.winSummary,
+			this.conditionalStyles.winSummary.hidden,
+			ANIMATION_TIME,
+			uponCompletion,
+		)
+		this.winSummaryShown = false
+	}
+
+	/**
+	 * @param {number} survivorCount
+	 * @param {GameDifficulty} difficulty
+	 */
+	showWinSummary(survivorCount, difficulty) {
+		this.applyStyles(
+			this.element.informationCard.winSummary,
+			this.conditionalStyles.winSummary.shown,
+			ANIMATION_TIME,
+			() => {
+				transitionText(
+					this.element.textDisplay.summaryDifficulty,
+					difficulty.toUpperCase(),
+					ANIMATION_TIME,
+				)
+				transitionText(
+					this.element.textDisplay.summarySurvivor,
+					Math.round(survivorCount).toString(),
+					ANIMATION_TIME,
+				)
+			},
+		)
+		this.winSummaryShown = true
+	}
+
+	/**
+	 * @param {(() => void) | null} uponCompletion An optional callback
+	 * function that will be executed when the animation finishes.
+	 */
+	hideLoseScreen(uponCompletion = null) {
+		this.applyStyles(
+			this.element.informationCard.loseScreen,
+			this.conditionalStyles.loseScreen.hidden,
+			ANIMATION_TIME,
+			uponCompletion,
+		)
+		this.loseScreenShown = false
+	}
+
+	showLoseScreen() {
+		this.applyStyles(
+			this.element.informationCard.loseScreen,
+			this.conditionalStyles.loseScreen.shown,
+			ANIMATION_TIME,
+		)
+		this.loseScreenShown = true
+	}
+
+	/**
+	 * @param {UINotificationType} notification
+	 */
+	showNotification(notification) {
+		if (this.notifications.has(notification)) return
+		this.notifications.add(notification)
+
+		this.element.notification[notification].classList.remove("inactive")
+	}
+
+	/**
+	 * @param {UINotificationType} notification
+	 */
+	hideNotification(notification) {
+		if (!this.notifications.has(notification)) return
+		this.notifications.delete(notification)
+
+		this.element.notification[notification].classList.add("inactive")
+	}
+
 	get instructionsVisible() {
 		return this.instructionsShown
 	}
@@ -300,5 +392,13 @@ class UI {
 
 	get settingsVisible() {
 		return this.settingsShown
+	}
+
+	get winSummaryVisible() {
+		return this.winSummaryShown
+	}
+
+	get loseScreenVisible() {
+		return this.loseScreenShown
 	}
 }

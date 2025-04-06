@@ -1,0 +1,48 @@
+#win-screen {
+	box-sizing: border-box;
+
+	--win-screen-width: clamp(400px, 70%, 600px);
+	--win-screen-height: clamp(400px, 80%, 550px);
+	width: var(--win-screen-width);
+	height: var(--win-screen-height);
+	position: fixed;
+	z-index: 4;
+	top: calc(100vh + 50px);
+	left: calc(50vw - var(--win-screen-width) / 2);
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	transition: top 400ms ease-in-out;
+	border: 2px solid;
+	border-color: var(--greeen);
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.3);
+	color: white;
+	padding: 10px;
+}
+
+#win-screen img {
+	max-width: 50%;
+	min-width: 150px;
+	height: auto;
+	margin: 0 auto;
+}
+
+#win-screen h1 {
+	font-size: 2;
+	text-align: center;
+}
+
+#win-screen table {
+	padding: 1rem;
+	margin: 1rem;
+	font-size: 1.4rem;
+}
+
+#win-screen-return-button {
+	position: absolute;
+	bottom: -60px;
+	right: 0;
+	border-bottom: 2px solid var(--greeen);
+}

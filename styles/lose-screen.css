@@ -1,0 +1,41 @@
+#lose-screen {
+	box-sizing: border-box;
+
+	--lose-screen-width: clamp(300px, 70%, 450px);
+	--lose-screen-height: clamp(200px, 80%, 300px);
+	width: var(--lose-screen-width);
+	height: var(--lose-screen-height);
+	position: fixed;
+	z-index: 4;
+	top: calc(100vh + 50px);
+	left: calc(50vw - var(--lose-screen-width) / 2);
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	transition: top 400ms ease-in-out;
+	border: 2px solid;
+	border-color: var(--greeen);
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.3);
+	color: white;
+	padding: 1rem;
+	font-size: 1.1rem;
+}
+
+#lose-screen h1 {
+	font-size: 2;
+	text-align: center;
+	padding-bottom: 0;
+}
+
+#lose-screen p {
+	padding: 1rem;
+}
+
+#lose-screen-return-button {
+	position: absolute;
+	bottom: -60px;
+	right: 0;
+	border-bottom: 2px solid var(--greeen);
+}

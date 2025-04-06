@@ -1,4 +1,6 @@
 #menu {
+	box-sizing: border-box;
+
 	--menu-height: clamp(200px, 60%, 400px);
 	--menu-width: clamp(400px, 60%, 400px);
 	width: var(--menu-width);
@@ -16,7 +18,7 @@
 	border: 2px solid;
 	border-color: #7efc82;
 	border-radius: 15px;
-	background-color: rgba(0, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.3);
 	padding: 0;
 	margin: 0;
 }

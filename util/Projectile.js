@@ -22,6 +22,14 @@ class Projectile {
 		isNuke = false,
 	) {
 		/**
+		 * The previous center.
+		 *
+		 * @type {number[]}
+		 * @private
+		 */
+		this.prevPosition = startPoint
+
+		/**
 		 * The center of the rectangle.
 		 *
 		 * @type {number[]}
@@ -125,6 +133,8 @@ class Projectile {
 		const seconds = ms / 1000
 		const displacement = this.direction.map((x) => x * this.speed * seconds)
 
+		this.prevPosition = this.currentPosition.map((x) => x)
+
 		this.currentPosition = this.position.map((_, i) => {
 			return this.position[i] + displacement[i]
 		})
@@ -132,6 +142,13 @@ class Projectile {
 		this.currentVertices = this.currentVertices.map((vertex) => {
 			return vertex.map((_, i) => vertex[i] + displacement[i])
 		})
+	}
+
+	/**
+	 * @returns {number[]}
+	 */
+	get previousPosition() {
+		return this.prevPosition
 	}
 
 	/**

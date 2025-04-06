@@ -4,28 +4,93 @@
 /// <reference path="./Projectile.js" />
 
 /**
- * Determines whether or not a given bug is included in the projectile's
- * trajectory.
+ * Determines whether or not a projectile's center is within a bug's region, or
+ * just passed through it.
  *
+ * @param {number} baseSphereRadius
  * @param {Projectile} projectile
  * @param {Bug} bug
  * @returns {boolean} `true` if the bug is in the projectile's path, and
  * `false` otherwise.
  */
-function willCollide(projectile, bug) {
-	let projectileLocalCoordinates = transform(
+function collided(baseSphereRadius, projectile, bug) {
+	// Note: we ignore the azimuthal coordinates because the bugs have full
+	// azimuthal intervals, [0, 2pi], so it is impossible for the projectile's
+	// azimuthal angle (when converted to spherical coordinates) to be outside
+	// of the bounds.
+
+	let initial = transform(
 		[transpose(bug.rotationMatrix)],
-		normalize(projectile.position).map((x) => x * (1 + bug.elevation)),
+		projectile.previousPosition,
 	)
-	projectileLocalCoordinates[2] = Math.max(
-		-1,
-		Math.min(1, projectileLocalCoordinates[2]),
+	const [
+		initialRadialDistance,
+		initialPolarAngle,
+	] = cartesianToSpherical(initial)
+
+	let final = transform(
+		[transpose(bug.rotationMatrix)],
+		projectile.position,
 	)
-	let projectileLocalPolarAngle = Math.acos(projectileLocalCoordinates[2])
-	if (projectileLocalPolarAngle >= bug.arcLength) {
-		return false
-	}
-	return true
+	const [
+		finalRadialDistance,
+		finalPolarAngle,
+	] = cartesianToSpherical(final)
+
+	const [
+		radialDistanceLowerBound,
+		radialDistanceUpperBound,
+		polarAngleLowerBound,
+		polarAngleUpperBound,
+	] = [
+		baseSphereRadius,
+		baseSphereRadius + bug.elevation,
+		0,
+		bug.arcLength,
+	]
+
+	const passedThroughRadialDistanceBounds = (
+		initialRadialDistance >= radialDistanceUpperBound &&
+		finalRadialDistance <= radialDistanceLowerBound
+	) || (
+		initialRadialDistance <= radialDistanceLowerBound &&
+		finalRadialDistance >= radialDistanceUpperBound
+	)
+	const passedThroughPolarAngleBounds = (
+		initialPolarAngle >= polarAngleUpperBound &&
+		finalPolarAngle <= polarAngleLowerBound
+	) || (
+		initialPolarAngle <= polarAngleLowerBound &&
+		finalPolarAngle >= polarAngleUpperBound
+	)
+
+	const isWithinRadialDistanceBounds = (
+		initialRadialDistance <= radialDistanceUpperBound &&
+		initialRadialDistance >= radialDistanceLowerBound
+	) || (
+		finalRadialDistance <= radialDistanceUpperBound &&
+		finalRadialDistance >= radialDistanceLowerBound
+	)
+	const isWithinPolarAngleBounds = (
+		initialPolarAngle <= polarAngleUpperBound &&
+		initialPolarAngle >= polarAngleLowerBound
+	) || (
+		finalPolarAngle <= polarAngleUpperBound &&
+		finalPolarAngle >= polarAngleLowerBound
+	)
+
+	// If we wanted to be very technical, it's possible that the projectile
+	// could pass through the polar and radial constraints, but at different
+	// times along the time interval. However, we're only looking at the center
+	// of the projectile *and* the time intervals are very short. The
+	// possibility of this leading to something visually incosistent is
+	// practically zero.
+	const satisfiesRadialDistance = isWithinRadialDistanceBounds ||
+		passedThroughRadialDistanceBounds
+	const satisfiesPolarAngle = isWithinPolarAngleBounds ||
+		passedThroughPolarAngleBounds
+
+	return satisfiesRadialDistance && satisfiesPolarAngle
 }
 
 /**
@@ -58,10 +123,9 @@ function sphereSurfaceArea(polarMax, radialDistance) {
 /**
  * Apply matrix transformation(s) to a vector.
  *
- * @param {number[][][]} transformations The transformations to apply to the
- * vector. The transformations will be applied in the order of right-to-left,
- * so the last element will by applied first. This matrix will be mutated
- * (reversed).
+ * @param {number[][][]} transformations The transformation(s) to
+ * apply to the vector. The transformations will be applied in the order of
+ * right-to-left, so the last element will by applied first.
  * @param {number[]} vec The vector to which the transformations are applied.
  * The vector will not be mutated by this function.
  */
@@ -149,4 +213,35 @@ function inversePerspective(fovy, aspect, near, far) {
 	invertedPerspective[3][3] = (near + far) / (2 * far * near)
 
 	return invertedPerspective
+}
+
+/**
+ * Converts a vector of length 3 from Cartesian coordinates to spherical ones.
+ *
+ * @param {number[]} cartesian The Cartesian coordinates to convert.
+ * @returns {[
+ * 	radialDistance: number,
+ * 	polarAngle: number,
+ * 	azimuthalAngle: number
+ * ]} The equivalent spherical coordinates. Note that the angles are in radians.
+ */
+function cartesianToSpherical(cartesian) {
+	const [x, y, z] = cartesian
+
+	let radialDistance = cartesian.map((a) => a * a).reduce((a, b) => a + b)
+	radialDistance = Math.sqrt(radialDistance)
+
+	let polarAngle = z / radialDistance
+	polarAngle = Math.min(1, Math.max(-1, polarAngle))
+	polarAngle = Math.acos(polarAngle)
+
+	let azimuthalAngle = y / (radialDistance * Math.sin(polarAngle))
+	azimuthalAngle = Math.min(1, Math.max(-1, azimuthalAngle))
+	azimuthalAngle = Math.asin(azimuthalAngle)
+
+	return [
+		radialDistance,
+		polarAngle,
+		azimuthalAngle,
+	]
 }

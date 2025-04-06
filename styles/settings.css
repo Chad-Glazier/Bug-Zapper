@@ -1,4 +1,6 @@
 #settings {
+	box-sizing: border-box;
+
 	--settings-width: clamp(400px, 100%, 700px);
 	--settings-height: clamp(200px, 80%, 300px);
 	width: var(--settings-width);
@@ -15,7 +17,7 @@
 	border: 2px solid;
 	border-color: var(--greeen);
 	border-radius: 15px;
-	background-color: rgba(0, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.3);
 	color: white;
 	padding: 1rem;
 
@@ -54,7 +56,6 @@
 
 #difficulty-carousel .arrow-button:hover {
 	cursor: url(img/crosshairs_cursor_active.png) 17.5 17.5, auto;
-
 }
 
 #difficulty-text {

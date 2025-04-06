@@ -43,12 +43,54 @@
 	<script src="constants.js"></script>
 
 	<!-- My HTML user interface (mostly menu stuff). -->
+
 	<menu id="menu">
 		<button id="play-button">Play</button>
 		<button id="restart-button">Restart</button>
 		<button id="instructions-button">Instructions</button>
 		<button id="settings-button">Settings</button>
 	</menu>
+
+	<div id="win-screen">
+		<h1>EVACUATION COMPLETE</h1>
+		<img src="img/your-did-it-star.png">
+		<table>
+			<tr>
+				<td>Survivors evacuated</td>
+				<td id="summary-survivor-count">----</td>
+			</tr>
+			<tr>
+				<td>Difficulty</td>
+				<td id="summary-difficulty">----</td>
+			</tr>
+		</table>
+
+		<button id="win-screen-return-button">
+			Return
+		</button>
+	</div>
+
+	<div id="lose-screen">
+		<h1>CRITICAL MISSION FAILURE</h1>
+		<p>
+			All survivors were lost to the bugs.
+		</p>
+		<button id="lose-screen-return-button">
+			Return
+		</button>
+	</div>
+
+	<div id="notifications-container">
+		<div class="notification inactive" id="overdrive-ready-notification">
+			<strong>OVERDRIVE</strong> ready!<span class="key">Q</span>
+		</div>
+		<div class="notification inactive" id="overheated-notification">
+			The cannon is <strong>OVERHEATED</strong>! Wait for it to cool down before firing again.
+		</div>
+		<div class="notification inactive" id="nuke-ready-notification">
+			The survivors have been evacuated! You can now launch a nuclear bomb to finish off the invaders. <span class="key">F</span>
+		</div>
+	</div>
 
 	<div id="settings">
 		<table>

@@ -9,7 +9,7 @@
 
 /**
  * Draws the described scene into the provided rendering context.
- * 
+ *
  * @param {WebGLRenderingContext} gl
  * @param {number[][]} projectionMatrix
  * @param {Sphere} baseSphere

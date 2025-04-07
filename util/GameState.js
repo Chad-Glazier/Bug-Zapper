@@ -306,7 +306,7 @@ class GameState {
 	 * Projects pixel coordinates onto a plane in-game.
 	 *
 	 * @param {[x: number, y: number]} position The coordinates that you want
-	 * to convert from pixel coordinates (e.g., `[event.clientX, event.clientY]`) 
+	 * to convert from pixel coordinates (e.g., `[event.clientX, event.clientY]`)
 	 * to in-game coordinates.
 	 *
 	 * @returns {[x: number, y: number, z: number]} The x- and y- coordinates
@@ -331,16 +331,23 @@ class GameState {
 			0,
 		]
 
-		const projectedPosition = transform([
+		let projectedPosition = transform([
 			this.inverseProjectionMatrix,
 		], normalizedDeviceCoordinates)
 
-		const scalingFactor = this.distance
+		projectedPosition = transform(
+			[transpose(this.rotation)],
+			[
+				projectedPosition[0] * this.distance,
+				projectedPosition[1] * this.distance,
+				0,
+			],
+		)
 
 		return [
-			projectedPosition[0] * scalingFactor,
-			projectedPosition[1] * scalingFactor,
-			0,
+			projectedPosition[0],
+			projectedPosition[1],
+			projectedPosition[2],
 		]
 	}
 
@@ -696,7 +703,7 @@ class GameState {
 					-0.2,
 					this.distance,
 				]),
-				transform([transpose(this.rotation)], target),
+				target,
 				this.config.projectileSpeed,
 				0.1,
 				0.01,
@@ -707,7 +714,7 @@ class GameState {
 					-0.2,
 					this.distance,
 				]),
-				transform([transpose(this.rotation)], target),
+				target,
 				this.config.projectileSpeed,
 				0.1,
 				0.01,
@@ -1021,7 +1028,7 @@ class GameState {
 	 * The calculated coverage of the sphere. I.e., the ratio of the total
 	 * surface area of the bugs to the surface area of the base sphere, up
 	 * to a maximum of `1.0`.
-	 * 
+	 *
 	 * @public
 	 */
 	get coverage() {
